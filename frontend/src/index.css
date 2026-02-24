@@ -1,0 +1,21 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary-1: #2B3674;
+  --color-primary-2: #3A70FA;
+  --color-primary-3: #5882ED;
+  --color-primary-4: #93AEF3;
+
+  --color-neutral-1: #93AEF3;
+
+}
+* {
+  font-family: 'DM Sans', sans-serif;
+}

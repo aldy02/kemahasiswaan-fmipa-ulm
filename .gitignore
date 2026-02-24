@@ -1,0 +1,45 @@
+# ============================================
+# GLOBAL IGNORE - KemahasiswaanFMIPAULM
+# ============================================
+
+# ========== NODE DEPENDENCIES ==========
+**/node_modules/
+**/.pnpm-store/
+
+# ========== BUILD OUTPUT ==========
+**/dist/
+**/build/
+**/dist-ssr/
+
+# ========== ENV FILES ==========
+**/.env
+**/.env.*
+!.env.example
+
+# ========== LOGS ==========
+**/logs/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ========== CACHE ==========
+**/.cache/
+**/*.tsbuildinfo
+
+# ========== COVERAGE ==========
+coverage/
+
+# ========== SYSTEM FILES ==========
+.DS_Store
+Thumbs.db
+
+# ========== EDITOR ==========
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# ========== MISC ==========
+*.local
+*.tmp
+*.swp
