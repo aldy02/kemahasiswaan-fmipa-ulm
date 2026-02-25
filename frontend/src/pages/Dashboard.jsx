@@ -69,17 +69,16 @@ const StatusIcon = ({ status }) => {
 export default function Dashboard() {
   return (
     <MainLayout>
-      {/* Full-width padded container */}
-      <div className="px-6 py-6 lg:px-8 lg:py-7 w-full">
+      <div className="px-6 pt-6 pb-1 lg:px-8 lg:pt-7 lg:pb-1">
 
         {/* Breadcrumb */}
         <p className="text-xs text-slate-400 mb-1">Master User / Dashboard</p>
-        <h1 className="text-2xl lg:text-[28px] font-bold text-slate-800 mb-5">
+        <h1 className="text-2xl lg:text-[28px] font-bold text-primary-1 mb-6">
           Dashboard
         </h1>
 
         {/* Welcome Banner */}
-        <div className="w-full bg-primary-2 rounded-2xl px-6 py-6 lg:px-8 lg:py-7 mb-8 text-white">
+        <div className="bg-primary-2 rounded-2xl px-6 py-6 lg:px-8 lg:py-7 mb-5 text-white">
           <h2 className="text-[18px] lg:text-[22px] font-bold mb-1.5">
             Selamat Datang, Aldy!
           </h2>
@@ -95,9 +94,7 @@ export default function Dashboard() {
               key={s.label}
               className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
             >
-              <div
-                className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${s.iconBg} ${s.iconColor}`}
-              >
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${s.iconBg} ${s.iconColor}`}>
                 {s.icon}
               </div>
               <p className="text-xs text-slate-400 mb-1">{s.label}</p>
@@ -109,28 +106,22 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <h2 className="text-[17px] font-bold text-slate-800 mb-4">
+        <h2 className="text-[17px] font-bold text-slate-800 mb-3">
           Aktivitas Terbaru
         </h2>
 
-        {/* Activity list — scrollable on mobile */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        {/* Tidak ada mb di sini — biarkan pb container yang handle jarak bawah */}
+        <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.05)] overflow-hidden mb-4">
           {activities.map((item, i) => (
             <div
               key={i}
-              className={`
-                flex items-center gap-3 px-4 py-4
-                lg:px-5 lg:py-4
-                hover:bg-slate-50 transition-colors
-                ${i < activities.length - 1 ? "border-b border-slate-100" : ""}
-              `}
+              className={`flex items-center gap-3 px-4 py-4 lg:px-5 hover:bg-slate-50 transition-colors ${
+                i < activities.length - 1 ? "border-b border-slate-100" : ""
+              }`}
             >
-              {/* Icon */}
               <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
                 <FileText size={16} className="text-indigo-500" />
               </div>
-
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-800 leading-tight truncate">
                   {item.title}
@@ -138,11 +129,7 @@ export default function Dashboard() {
                 <p className="text-[12px] text-slate-400 mt-0.5">{item.type}</p>
                 <p className="text-[11px] text-slate-300 mt-0.5">{item.time}</p>
               </div>
-
-              {/* Status Badge */}
-              <div
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold shrink-0 ${statusStyle[item.status]}`}
-              >
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold shrink-0 ${statusStyle[item.status]}`}>
                 <StatusIcon status={item.status} />
                 <span>{item.status}</span>
               </div>

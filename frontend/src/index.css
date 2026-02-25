@@ -5,20 +5,21 @@
   --color-primary-2: #3A70FA;
   --color-primary-3: #5882ED;
   --color-primary-4: #93AEF3;
-
-  --color-neutral-1: #93AEF3;
-}
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  overflow-x: hidden;
+  
+  --color-neutral-1: #707EAE;
+  
+  /* Error */
+  --color-error-1: #A30D11;
+  --color-error-2: #D92D20;
+  --color-error-3: #EE5D50;
+  --color-error-4: #FCA8A9;
 }
 
 * {
   font-family: 'DM Sans', sans-serif;
+}
+
+body {
+  background-color: #F4F7FE;
+  overflow-x: hidden;
 }

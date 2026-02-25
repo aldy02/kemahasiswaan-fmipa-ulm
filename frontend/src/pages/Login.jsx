@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import { useState } from "react";
 import loginImage from "../assets/loginImage.png";
 import { Eye, EyeOff } from "lucide-react";
@@ -16,14 +17,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    // fixed inset-0 (fix heigh problem)
+    <div className="fixed inset-0 flex bg-white">
+
       {/* Left */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-white">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-white overflow-y-auto">
         <div className="max-w-sm w-full mx-auto">
           {/* Head */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-primary-1 mb-2">Login!</h1>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <p className="text-sm text-neutral-1 leading-relaxed">
               Selamat datang di Aplikasi Auto Generate Surat Layanan Kemahasiswaan FMIPA ULM
             </p>
           </div>
@@ -40,7 +43,7 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Masukkan username"
-                className="w-full px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
               />
             </div>
 
@@ -49,26 +52,20 @@ export default function Login() {
               <label className="block text-sm font-medium text-primary-1 mb-1.5">
                 Password
               </label>
-
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan password"
-                  className="w-full px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white pr-12"
+                  className="w-full px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white pr-12"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-1 transition-colors"
                 >
-                  {showPassword ? (
-                   <EyeOff size={20} strokeWidth={2} />
-                  ) : (
-                    <Eye size={20} strokeWidth={2} />
-                  )}
+                  {showPassword ? <EyeOff size={20} strokeWidth={2} /> : <Eye size={20} strokeWidth={2} />}
                 </button>
               </div>
             </div>
@@ -78,18 +75,16 @@ export default function Login() {
               <label className="block text-sm font-medium text-primary-1 mb-1.5">
                 Captcha
               </label>
-
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
                   placeholder="Masukkan captcha"
-                  className="flex-1 px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="flex-1 px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                 />
-
                 <div
-                  className="px-4 py-3 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 bg-gray-50 transition-colors select-none tracking-widest min-w-24 text-center cursor-pointer flex items-center justify-center"
+                  className="px-4 py-3 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 bg-gray-50 select-none tracking-widest min-w-24 text-center flex items-center justify-center"
                   style={{ fontFamily: "monospace", letterSpacing: "0.15em" }}
                 >
                   Lhqshas
@@ -123,7 +118,7 @@ export default function Login() {
           </form>
 
           {/* Register */}
-          <p className="text-center text-sm text-neutral-500 mt-6">
+          <p className="text-center text-sm text-neutral-1 mt-6">
             Belum punya akun?{" "}
             <a href="#" className="underline text-primary-2 hover:text-blue-700 font-semibold transition-colors">
               Register
@@ -136,10 +131,11 @@ export default function Login() {
       <div className="hidden md:block flex-1 overflow-hidden">
         <img
           src={loginImage}
-          alt="University campus"
+          alt="Photo Universitas Lambung Mangkurat"
           className="w-full h-full object-cover"
         />
       </div>
+
     </div>
   );
 }
