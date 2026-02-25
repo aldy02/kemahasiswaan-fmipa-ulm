@@ -1,20 +1,37 @@
 const jwt = require("jsonwebtoken");
+const { User } = require("../models");
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Akses ditolak. Token tidak ditemukan",
-    });
-  }
-
+const verifyToken = async (req, res, next) => {
   try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Akses ditolak. Token tidak ditemukan",
+      });
+    }
+
+    // Verifikasi JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, nim, role }
+
+    // Ambil user dari database
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    // Attach user DB ke request
+    req.user = user;
     next();
+
   } catch (error) {
     return res.status(401).json({
       success: false,

@@ -34,12 +34,8 @@ const login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      {
-        id: user.id,
-        nim: user.nim,
-        role: user.role,
-      },
+        const token = jwt.sign(
+      { id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
@@ -65,30 +61,13 @@ const login = async (req, res) => {
 };
 
 // GET /api/auth/me  → ambil data user yang sedang login
-const getMe = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.user.id, {
-      attributes: { exclude: ["password"] },
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User tidak ditemukan",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: { user },
-    });
-  } catch (error) {
-    console.error("GetMe error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Terjadi kesalahan pada server",
-    });
-  }
+const getMe = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    data: {
+      user: req.user,
+    },
+  });
 };
 
 module.exports = { login, getMe };
