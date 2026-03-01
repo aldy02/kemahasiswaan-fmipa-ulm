@@ -86,7 +86,7 @@ export default function Sidebar({ isOpen, onClose, activeKey, setActiveKey }) {
           <div className="relative flex items-center gap-3 px-6 pt-7 pb-6 border-b border-slate-100 shrink-0">
             <div className="w-13 h-13 rounded-2xl overflow-hidden bg-indigo-50 shrink-0">
               <img
-                src="https://api.dicebear.com/7.x/adventurer/svg?seed=Aldy&backgroundColor=b6e3f4"
+                src="https://api.dicebear.com/9.x/micah/svg?backgroundColor=d1d4f9,b6e3f4&seed=Aidan"
                 alt="avatar"
                 className="w-full h-full object-cover"
               />
