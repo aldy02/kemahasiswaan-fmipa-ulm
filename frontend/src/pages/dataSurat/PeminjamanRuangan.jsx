@@ -129,7 +129,7 @@ function Pagination({ current, total, onChange }) {
       <button
         onClick={() => onChange(current - 1)}
         disabled={current === 1}
-        className="px-3 py-1.5 text-[13px] rounded-lg text-slate-500 hover:bg-slate-100 transition-colors disabled:text-slate-300 disabled:cursor-not-allowed"
+        className="px-3 py-1.5 text-[13px] rounded-lg text-neutral-2 hover:bg-slate-100 transition-colors disabled:text-slate-300 disabled:cursor-not-allowed"
       >
         Previous
       </button>
@@ -137,7 +137,7 @@ function Pagination({ current, total, onChange }) {
         <button
           key={p}
           onClick={() => onChange(p)}
-          className={`min-w-9 py-1.5 text-[13px] rounded-lg font-medium transition-colors ${p === current ? "bg-blue-500 text-white" : "text-slate-500 hover:bg-slate-100"
+          className={`min-w-9 py-1.5 text-[13px] bg-neutral-3 rounded-lg font-medium transition-colors ${p === current ? "bg-primary-2 text-white" : "text-primary-1 hover:bg-slate-300/80"
             }`}
         >
           {p}
@@ -146,7 +146,7 @@ function Pagination({ current, total, onChange }) {
       <button
         onClick={() => onChange(current + 1)}
         disabled={current === total}
-        className="px-3 py-1.5 text-[13px] rounded-lg text-slate-500 hover:bg-slate-100 transition-colors disabled:text-slate-300 disabled:cursor-not-allowed"
+        className="px-3 py-1.5 text-[13px] rounded-lg text-neutral-2 hover:bg-slate-100 transition-colors disabled:text-slate-300 disabled:cursor-not-allowed"
       >
         Next
       </button>
@@ -188,7 +188,7 @@ export default function PeminjamanRuangan() {
         </h1>
 
         {/* Subtitle — mobile only */}
-        <p className="lg:hidden text-[13px] text-slate-400 mt-0.5">
+        <p className="lg:hidden text-[13px] text-neutral-1 mt-0.5">
           Informasi data surat peminjaman ruangan
         </p>
       </div>
