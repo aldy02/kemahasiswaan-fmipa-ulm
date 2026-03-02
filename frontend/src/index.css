@@ -7,12 +7,18 @@
   --color-primary-4: #93AEF3;
   
   --color-neutral-1: #707EAE;
+  --color-neutral-2: #A3AED0;
   
   /* Error */
   --color-error-1: #A30D11;
-  --color-error-2: #D92D20;
-  --color-error-3: #EE5D50;
-  --color-error-4: #FCA8A9;
+  --color-error-2: #EE5D50;
+  
+  /* Succes */
+  --color-succes-1: #05CD99;
+
+  /* Warning */
+  --color-warning-1: #FFCE20;
+  
 }
 
 * {
