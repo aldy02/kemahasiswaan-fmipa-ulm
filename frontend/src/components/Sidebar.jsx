@@ -1,33 +1,27 @@
 // src/components/Sidebar.jsx
 import { useState } from "react";
-import {
-  House,
-  Mails,
-  Settings,
-  LogOut,
-  ChevronUp,
-  ChevronDown,
-  ChevronLeft,
-} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { House, Mails, Settings, LogOut, ChevronUp, ChevronDown, ChevronLeft } from "lucide-react";
 
 const menuItems = [
   {
     label: "Dashboard",
     icon: <House size={20} />,
     key: "dashboard",
+    path: "/",
   },
   {
     label: "Pengajuan Surat",
     icon: <Mails size={20} />,
     key: "pengajuan",
     children: [
-      "Peminjaman ruangan",
-      "Peminjaman alat/bahan",
-      "Izin tidak mengikuti kuliah",
-      "Izin praktikum ulang",
-      "Rekomendasi",
-      "Keterangan",
-      "Keterangan mahasiswa kuliah",
+      { label: "Peminjaman ruangan",           path: "/pengajuan-surat/peminjaman-ruangan" },
+      { label: "Peminjaman alat/bahan",        path: "/pengajuan-surat/peminjaman-alat-bahan" },
+      { label: "Izin tidak mengikuti kuliah",  path: "/pengajuan-surat/izin-tidak-mengikuti-kuliah" },
+      { label: "Izin praktikum ulang",         path: "/pengajuan-surat/izin-praktikum-ulang" },
+      { label: "Rekomendasi",                  path: "/pengajuan-surat/rekomendasi" },
+      { label: "Keterangan",                   path: "/pengajuan-surat/keterangan" },
+      { label: "Keterangan mahasiswa kuliah",  path: "/pengajuan-surat/keterangan-mahasiswa-kuliah" },
     ],
   },
   {
@@ -35,30 +29,41 @@ const menuItems = [
     icon: <Mails size={20} />,
     key: "data",
     children: [
-      "Peminjaman ruangan",
-      "Peminjaman alat/bahan",
-      "Izin tidak mengikuti kuliah",
-      "Izin praktikum ulang",
-      "Rekomendasi",
-      "Keterangan",
-      "Keterangan mahasiswa kuliah",
+      { label: "Peminjaman ruangan",           path: "/data-surat/peminjaman-ruangan" },
+      { label: "Peminjaman alat/bahan",        path: "/data-surat/peminjaman-alat-bahan" },
+      { label: "Izin tidak mengikuti kuliah",  path: "/data-surat/izin-tidak-mengikuti-kuliah" },
+      { label: "Izin praktikum ulang",         path: "/data-surat/izin-praktikum-ulang" },
+      { label: "Rekomendasi",                  path: "/data-surat/rekomendasi" },
+      { label: "Keterangan",                   path: "/data-surat/keterangan" },
+      { label: "Keterangan mahasiswa kuliah",  path: "/data-surat/keterangan-mahasiswa-kuliah" },
     ],
   },
   {
     label: "Pengaturan",
     icon: <Settings size={20} />,
     key: "pengaturan",
+    path: "/pengaturan",
   },
 ];
 
-export default function Sidebar({ isOpen, onClose, activeKey, setActiveKey }) {
-  const [openMenus, setOpenMenus] = useState({ pengajuan: true, data: false });
+export default function Sidebar({ isOpen, onClose }) {
+  const location = useLocation();
+
+  // Auto-open parent jika child route sedang aktif
+  const getInitialOpenMenus = () => {
+    const open = { pengajuan: false, data: false };
+    menuItems.forEach((item) => {
+      if (item.children?.some((c) => location.pathname.startsWith(c.path))) {
+        open[item.key] = true;
+      }
+    });
+    return open;
+  };
+
+  const [openMenus, setOpenMenus] = useState(getInitialOpenMenus);
 
   const toggleMenu = (key) =>
     setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  const activeParent = activeKey?.includes("::") ? activeKey.split("::")[0] : null;
-  const activeChild = activeKey?.includes("::") ? activeKey.split("::")[1] : null;
 
   return (
     <>
@@ -100,7 +105,6 @@ export default function Sidebar({ isOpen, onClose, activeKey, setActiveKey }) {
               </span>
             </div>
 
-            {/* Close button mobile */}
             {isOpen && (
               <button
                 onClick={onClose}
@@ -117,63 +121,69 @@ export default function Sidebar({ isOpen, onClose, activeKey, setActiveKey }) {
             <nav className="flex flex-col px-4 py-5 gap-1">
               {menuItems.map((item) => {
                 const isParentActive = item.children
-                  ? activeParent === item.key
-                  : activeKey === item.key;
+                  ? item.children.some((c) => location.pathname.startsWith(c.path))
+                  : location.pathname === item.path;
 
                 return (
                   <div key={item.key}>
-                    <button
-                      className={`
-                        flex items-center gap-3.5 w-full px-4 py-3
-                        rounded-xl text-[14px] font-medium text-left
-                        transition-colors duration-150
-                        ${
-                          isParentActive
+                    {item.children ? (
+                      <button
+                        className={`
+                          flex items-center gap-3.5 w-full px-4 py-3
+                          rounded-xl text-[14px] font-medium text-left
+                          transition-colors duration-150
+                          ${isParentActive
                             ? "bg-primary-3/10 text-primary-3"
                             : "text-neutral-1 hover:bg-slate-50 hover:text-primary-1"
-                        }
-                      `}
-                      onClick={() => {
-                        if (item.children) {
-                          toggleMenu(item.key);
-                        } else {
-                          setActiveKey(item.key);
-                          onClose();
-                        }
-                      }}
-                    >
-                      <span className="shrink-0">{item.icon}</span>
-                      <span className="flex-1 leading-tight">{item.label}</span>
-                      {item.children && (
+                          }
+                        `}
+                        onClick={() => toggleMenu(item.key)}
+                      >
+                        <span className="shrink-0">{item.icon}</span>
+                        <span className="flex-1 leading-tight">{item.label}</span>
                         <span className="text-neutral-1 shrink-0">
                           {openMenus[item.key] ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                         </span>
-                      )}
-                    </button>
+                      </button>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        onClick={onClose}
+                        className={`
+                          flex items-center gap-3.5 w-full px-4 py-3
+                          rounded-xl text-[14px] font-medium
+                          transition-colors duration-150
+                          ${isParentActive
+                            ? "bg-primary-3/10 text-primary-3"
+                            : "text-neutral-1 hover:bg-slate-50 hover:text-primary-1"
+                          }
+                        `}
+                      >
+                        <span className="shrink-0">{item.icon}</span>
+                        <span className="flex-1 leading-tight">{item.label}</span>
+                      </Link>
+                    )}
 
                     {item.children && openMenus[item.key] && (
                       <div className="ml-4 pl-5 mt-1 mb-1 flex flex-col gap-0.5 border-l-2 border-slate-100">
                         {item.children.map((child) => {
-                          const isChildActive = activeParent === item.key && activeChild === child;
+                          const isChildActive = location.pathname === child.path;
                           return (
-                            <button
-                              key={child}
+                            <Link
+                              key={child.path}
+                              to={child.path}
+                              onClick={onClose}
                               className={`
                                 w-full text-left px-3 py-2 text-[13px] rounded-lg
                                 transition-colors leading-tight
-                                ${
-                                  isChildActive
-                                    ? "bg-primary-3/10 text-primary-3 font-medium"
-                                    : "text-neutral-1 hover:text-primary-1 hover:bg-slate-50"
+                                ${isChildActive
+                                  ? "bg-primary-3/10 text-primary-3 font-medium"
+                                  : "text-neutral-1 hover:text-primary-1 hover:bg-slate-50"
                                 }
                               `}
-                              onClick={() => {
-                                setActiveKey(`${item.key}::${child}`);
-                                onClose();
-                              }}
                             >
-                              {child}
-                            </button>
+                              {child.label}
+                            </Link>
                           );
                         })}
                       </div>
