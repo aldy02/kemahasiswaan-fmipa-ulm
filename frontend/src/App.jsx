@@ -4,7 +4,11 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard";
 import PeminjamanRuangan from "./pages/dataSurat/PeminjamanRuangan";
 import PeminjamanAlatBahan from "./pages/dataSurat/PeminjamanAlatBahan";
-
+import IzinTidakMengikutiKuliah from "./pages/dataSurat/IzinTidakMengikutiKuliah";
+import IzinPraktikumUlang from "./pages/dataSurat/IzinPraktikumUlang";
+import Rekomendasi from "./pages/dataSurat/Rekomendasi";
+import Keterangan from "./pages/dataSurat/Keterangan";
+import KeteranganMahasiswaKuliah from "./pages/dataSurat/KeteranganMahasiswaKuliah";
 
 function App() {
 
@@ -15,6 +19,11 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/data-surat/peminjaman-ruangan" element={<PeminjamanRuangan />} />
       <Route path="/data-surat/peminjaman-alat-bahan" element={<PeminjamanAlatBahan />} />
+      <Route path="/data-surat/izin-tidak-mengikuti-kuliah" element={<IzinTidakMengikutiKuliah />} />
+      <Route path="/data-surat/izin-praktikum-ulang" element={<IzinPraktikumUlang />} />
+      <Route path="/data-surat/rekomendasi" element={<Rekomendasi />} />
+      <Route path="/data-surat/keterangan" element={<Keterangan />} />
+      <Route path="/data-surat/keterangan-mahasiswa-kuliah" element={<KeteranganMahasiswaKuliah />} />
     </Routes>
   )
 }
