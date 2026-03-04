@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard";
 import PeminjamanRuangan from "./pages/dataSurat/PeminjamanRuangan";
+import PeminjamanRuanganDetail from "./pages/dataSurat/PeminjamanRuanganDetail";
 import PeminjamanAlatBahan from "./pages/dataSurat/PeminjamanAlatBahan";
 import IzinTidakMengikutiKuliah from "./pages/dataSurat/IzinTidakMengikutiKuliah";
 import IzinPraktikumUlang from "./pages/dataSurat/IzinPraktikumUlang";
@@ -18,6 +19,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/data-surat/peminjaman-ruangan" element={<PeminjamanRuangan />} />
+      <Route path="/data-surat/peminjaman-ruangan/:id" element={<PeminjamanRuanganDetail />} />
       <Route path="/data-surat/peminjaman-alat-bahan" element={<PeminjamanAlatBahan />} />
       <Route path="/data-surat/izin-tidak-mengikuti-kuliah" element={<IzinTidakMengikutiKuliah />} />
       <Route path="/data-surat/izin-praktikum-ulang" element={<IzinPraktikumUlang />} />
