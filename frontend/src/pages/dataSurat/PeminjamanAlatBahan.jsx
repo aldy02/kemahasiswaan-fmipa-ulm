@@ -163,7 +163,7 @@ function Pagination({ current, total, onChange }) {
 
 // Main Page
 export default function PeminjamanAlatBahan() {
-  const navigate = useNavigate(); // ✅ di dalam komponen
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 

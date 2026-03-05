@@ -3,7 +3,7 @@ import { SquarePen, ArrowLeft, FileText, Users, Building2, CalendarDays, Message
 import MainLayout from "../../layouts/MainLayout";
 import { peminjamanAlatBahanData } from "../../test/data";
 
-// Status Badge — always pill with white icon circle
+// Status Badge
 function StatusBadge({ status }) {
   const map = {
     Diterima: { pillBg: "bg-succes-1", iconColor: "text-succes-1", icon: <Check size={14} strokeWidth={3} /> },
