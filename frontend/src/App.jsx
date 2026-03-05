@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import PeminjamanRuangan from "./pages/dataSurat/PeminjamanRuangan";
 import PeminjamanRuanganDetail from "./pages/dataSurat/PeminjamanRuanganDetail";
 import PeminjamanAlatBahan from "./pages/dataSurat/PeminjamanAlatBahan";
+import PeminjamanAlatBahanDetail from "./pages/dataSurat/PeminjamanAlatBahanDetail";
 import IzinTidakMengikutiKuliah from "./pages/dataSurat/IzinTidakMengikutiKuliah";
 import IzinPraktikumUlang from "./pages/dataSurat/IzinPraktikumUlang";
 import Rekomendasi from "./pages/dataSurat/Rekomendasi";
@@ -21,6 +22,7 @@ function App() {
       <Route path="/data-surat/peminjaman-ruangan" element={<PeminjamanRuangan />} />
       <Route path="/data-surat/peminjaman-ruangan/:id" element={<PeminjamanRuanganDetail />} />
       <Route path="/data-surat/peminjaman-alat-bahan" element={<PeminjamanAlatBahan />} />
+      <Route path="/data-surat/peminjaman-alat-bahan/:id" element={<PeminjamanAlatBahanDetail />} />
       <Route path="/data-surat/izin-tidak-mengikuti-kuliah" element={<IzinTidakMengikutiKuliah />} />
       <Route path="/data-surat/izin-praktikum-ulang" element={<IzinPraktikumUlang />} />
       <Route path="/data-surat/rekomendasi" element={<Rekomendasi />} />

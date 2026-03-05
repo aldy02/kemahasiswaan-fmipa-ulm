@@ -168,7 +168,7 @@ function Pagination({ current, total, onChange }) {
 
 // Main Page
 export default function PeminjamanRuangan() {
-  const navigate = useNavigate(); // ✅ dipanggil di dalam komponen
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
