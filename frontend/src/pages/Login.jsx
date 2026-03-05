@@ -1,7 +1,7 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import loginImage from "../assets/loginImage.png";
 import { Eye, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -120,9 +120,12 @@ export default function Login() {
           {/* Register */}
           <p className="text-center text-sm text-neutral-1 mt-6">
             Belum punya akun?{" "}
-            <a href="#" className="underline text-primary-2 hover:text-blue-700 font-semibold transition-colors">
+            <Link
+              to="/register"
+              className="underline text-primary-2 hover:text-blue-700 font-semibold transition-colors"
+            >
               Register
-            </a>
+            </Link>
           </p>
         </div>
       </div>
