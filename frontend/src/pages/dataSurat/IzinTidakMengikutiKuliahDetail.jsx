@@ -13,7 +13,7 @@ function StatusBadge({ status }) {
   const cfg = map[status] ?? { pillBg: "bg-slate-400", iconColor: "text-slate-600", icon: null };
   return (
     <span className={`inline-flex items-center gap-2.5 ${cfg.pillBg} text-white font-bold text-sm px-4 py-2.5 lg:rounded-xl rounded-full whitespace-nowrap`}>
-      <span className={`flex items-center justify-center w-6 h-6 rounded-full bg-white ${cfg.iconColor} shrink-0`}>
+      <span className={`flex items-center justify-center w-4 h-4 rounded-full bg-white ${cfg.iconColor} shrink-0`}>
         {cfg.icon}
       </span>
       {status}

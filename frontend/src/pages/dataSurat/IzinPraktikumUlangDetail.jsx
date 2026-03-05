@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { SquarePen, ArrowLeft, FileText, Users, Building2, CalendarDays, MessageSquare, Package, Check, X } from "lucide-react";
+import { SquarePen, ArrowLeft, FileText, User, CalendarDays, Info, MessageSquare, Check, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import { peminjamanAlatBahanData } from "../../test/data";
+import { izinPraktikumUlangData } from "../../test/data";
 
 // Status Badge
 function StatusBadge({ status }) {
@@ -21,7 +21,6 @@ function StatusBadge({ status }) {
   );
 }
 
-// Section Card
 function SectionCard({ icon, title, children }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
@@ -45,21 +44,11 @@ function Field({ label, value }) {
   );
 }
 
-function FieldWithSub({ label, main, sub }) {
-  return (
-    <div className="mb-4 last:mb-0">
-      <p className="text-xs text-neutral-2 mb-0.5">{label}</p>
-      <p className="text-sm mt-1 font-medium text-primary-1">{main || "-"}</p>
-      {sub && <p className="text-sm font-medium text-primary-1 mt-0.5">{sub}</p>}
-    </div>
-  );
-}
-
-export default function PeminjamanAlatBahanDetail() {
+export default function IzinPraktikumUlangDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const item = peminjamanAlatBahanData.find((d) => d.id === Number(id));
+  const item = izinPraktikumUlangData.find((d) => d.id === Number(id));
 
   if (!item) {
     return (
@@ -78,8 +67,8 @@ export default function PeminjamanAlatBahanDetail() {
     <MainLayout>
       {/* ── Page Header ── */}
       <div className="px-4 pb-0 lg:px-8 lg:pt-7">
-        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Data Surat / Peminjaman Alat/Bahan / Detail</p>
-        <h1 className="hidden lg:block text-2xl lg:text-3xl font-bold text-primary-1 mb-1">Data Surat Peminjaman Alat/Bahan</h1>
+        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Data Surat / Izin Praktikum Ulang / Detail</p>
+        <h1 className="hidden lg:block text-2xl lg:text-3xl font-bold text-primary-1 mb-1">Data Surat Izin Praktikum Ulang</h1>
       </div>
 
       <div className="hidden lg:block h-6" />
@@ -90,7 +79,7 @@ export default function PeminjamanAlatBahanDetail() {
         {/* Panel Header — Desktop */}
         <div className="hidden lg:flex items-start justify-between gap-4 mb-1">
           <div>
-            <h2 className="text-xl font-bold text-primary-1">Detail Peminjaman Alat/Bahan</h2>
+            <h2 className="text-xl font-bold text-primary-1">Detail Izin Praktikum Ulang</h2>
             <p className="text-sm text-neutral-2 mt-0.5">No. Surat: {item.noSurat}</p>
           </div>
           <StatusBadge status={item.status} />
@@ -98,8 +87,8 @@ export default function PeminjamanAlatBahanDetail() {
 
         {/* Panel Header — Mobile */}
         <div className="lg:hidden px-4 pt-4 mb-1">
-          <h2 className="text-xl font-bold text-primary-1">Detail Surat Peminjaman Alat/Bahan</h2>
-          <p className="text-sm text-neutral-2 mt-0.5">No surat: {item.noSurat}</p>
+          <h2 className="text-xl font-bold text-primary-1">Detail Izin Praktikum Ulang</h2>
+          <p className="text-sm text-neutral-2 mt-0.5">No. Surat: {item.noSurat}</p>
           <div className="mt-3">
             <StatusBadge status={item.status} />
           </div>
@@ -108,8 +97,9 @@ export default function PeminjamanAlatBahanDetail() {
         <hr className="border-slate-200 my-5 mx-4 lg:mx-0" />
 
         {/* ── Desktop: 2-column grid ── */}
+        {/* LEFT: Informasi Surat, Data Mahasiswa */}
+        {/* RIGHT: Jadwal Izin, Alasan & Tempat, Keterangan */}
         <div className="hidden lg:grid lg:grid-cols-2 gap-4">
-          {/* LEFT */}
           <div className="flex flex-col gap-4">
             <SectionCard icon={<FileText size={20} />} title="Informasi Surat">
               <Field label="No Surat" value={item.noSurat} />
@@ -117,31 +107,25 @@ export default function PeminjamanAlatBahanDetail() {
               <Field label="Tanggal Pengajuan" value={item.tanggalPengajuan} />
             </SectionCard>
 
-            <SectionCard icon={<Building2 size={20} />} title="Detail Organisasi & Kegiatan">
-              <Field label="Nama Organisasi" value={item.organisasi} />
-              <Field label="Nama Kegiatan" value={item.kegiatan} />
-            </SectionCard>
-
-            <SectionCard icon={<Package size={20} />} title="Detail Alat/Bahan">
-              {item.daftarAlat?.map((alat) => (
-                <Field key={alat.item} label={alat.item} value={alat.nama} />
-              ))}
+            <SectionCard icon={<User size={20} />} title="Data Mahasiswa">
+              <Field label="NIM" value={item.nim} />
+              <Field label="Nama" value={item.nama} />
+              <Field label="Mata Kuliah" value={item.mataKuliah} />
+              <Field label="Program Studi" value={item.prodi} />
             </SectionCard>
           </div>
 
-          {/* RIGHT */}
           <div className="flex flex-col gap-4">
-            <SectionCard icon={<Users size={20} />} title="Informasi Kepemimpinan">
-              <FieldWithSub label="Penanggung Jawab" main={item.penanggungJawab?.nama} sub={`Telp: ${item.penanggungJawab?.telp}`} />
-              <FieldWithSub label="Ketua Pelaksana" main={item.ketuaPelaksana?.nama} sub={`NIM: ${item.ketuaPelaksana?.nim}`} />
-              <FieldWithSub label="Ketua Organisasi" main={item.ketuaOrganisasi?.nama} sub={`Telp: ${item.ketuaOrganisasi?.telp}`} />
+            <SectionCard icon={<CalendarDays size={20} />} title="Jadwal Izin">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                <Field label="Tanggal Mulai" value={item.tanggalMulai} />
+                <Field label="Tanggal Akhir" value={item.tanggalAkhir} />
+              </div>
             </SectionCard>
 
-            <SectionCard icon={<CalendarDays size={20} />} title="Jadwal Peminjaman">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                <Field label="Tanggal Pinjam" value={item.tanggalPinjam} />
-                <Field label="Tanggal Kembali" value={item.tanggalKembali} />
-              </div>
+            <SectionCard icon={<Info size={20} />} title="Alasan & Tempat Izin">
+              <Field label="Sebab" value={item.sebab} />
+              <Field label="Tempat" value={item.tempat} />
             </SectionCard>
 
             <SectionCard icon={<MessageSquare size={20} />} title="Keterangan">
@@ -150,7 +134,7 @@ export default function PeminjamanAlatBahanDetail() {
           </div>
         </div>
 
-        {/* ── Mobile: single column — Surat → Organisasi → Kepemimpinan → Alat/Bahan → Jadwal → Keterangan ── */}
+        {/* ── Mobile: Surat → Mahasiswa → Jadwal → Alasan → Keterangan ── */}
         <div className="lg:hidden flex flex-col gap-4 px-4">
           <SectionCard icon={<FileText size={20} />} title="Informasi Surat">
             <Field label="No Surat" value={item.noSurat} />
@@ -158,28 +142,23 @@ export default function PeminjamanAlatBahanDetail() {
             <Field label="Tanggal Pengajuan" value={item.tanggalPengajuan} />
           </SectionCard>
 
-          <SectionCard icon={<Building2 size={20} />} title="Detail Organisasi & Kegiatan">
-            <Field label="Nama Organisasi" value={item.organisasi} />
-            <Field label="Nama Kegiatan" value={item.kegiatan} />
+          <SectionCard icon={<User size={20} />} title="Data Mahasiswa">
+            <Field label="NIM" value={item.nim} />
+            <Field label="Nama" value={item.nama} />
+            <Field label="Mata Kuliah" value={item.mataKuliah} />
+            <Field label="Program Studi" value={item.prodi} />
           </SectionCard>
 
-          <SectionCard icon={<Users size={20} />} title="Informasi Kepemimpinan">
-            <FieldWithSub label="Penanggung Jawab" main={item.penanggungJawab?.nama} sub={`Telp: ${item.penanggungJawab?.telp}`} />
-            <FieldWithSub label="Ketua Pelaksana" main={item.ketuaPelaksana?.nama} sub={`NIM: ${item.ketuaPelaksana?.nim}`} />
-            <FieldWithSub label="Ketua Organisasi" main={item.ketuaOrganisasi?.nama} sub={`Telp: ${item.ketuaOrganisasi?.telp}`} />
-          </SectionCard>
-
-          <SectionCard icon={<Package size={20} />} title="Detail Alat/Bahan">
-            {item.daftarAlat?.map((alat) => (
-              <Field key={alat.item} label={alat.item} value={alat.nama} />
-            ))}
-          </SectionCard>
-
-          <SectionCard icon={<CalendarDays size={20} />} title="Jadwal Peminjaman">
+          <SectionCard icon={<CalendarDays size={20} />} title="Jadwal Izin">
             <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-              <Field label="Tanggal Pinjam" value={item.tanggalPinjam} />
-              <Field label="Tanggal Kembali" value={item.tanggalKembali} />
+              <Field label="Tanggal Mulai" value={item.tanggalMulai} />
+              <Field label="Tanggal Akhir" value={item.tanggalAkhir} />
             </div>
+          </SectionCard>
+
+          <SectionCard icon={<Info size={20} />} title="Alasan & Tempat Izin">
+            <Field label="Sebab" value={item.sebab} />
+            <Field label="Tempat" value={item.tempat} />
           </SectionCard>
 
           <SectionCard icon={<MessageSquare size={20} />} title="Keterangan">
