@@ -15,6 +15,7 @@ import RekomendasiDetail from "./pages/dataSurat/RekomendasiDetail";
 import Keterangan from "./pages/dataSurat/Keterangan";
 import KeteranganDetail from "./pages/dataSurat/KeteranganDetail";
 import KeteranganMahasiswaKuliah from "./pages/dataSurat/KeteranganMahasiswaKuliah";
+import KeteranganMahasiswaKuliahDetail from "./pages/dataSurat/KeteranganMahasiswaKuliahDetail";
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
       <Route path="/data-surat/keterangan" element={<Keterangan />} />
       <Route path="/data-surat/keterangan/:id" element={<KeteranganDetail />} />
       <Route path="/data-surat/keterangan-mahasiswa-kuliah" element={<KeteranganMahasiswaKuliah />} />
+      <Route path="/data-surat/keterangan-mahasiswa-kuliah/:id" element={<KeteranganMahasiswaKuliahDetail />} />
     </Routes>
   )
 }
