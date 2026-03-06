@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { SquarePen, ArrowLeft, User, CheckCircle, FileText, MessageSquare, Check, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import { rekomendasiData } from "../../test/data";
+import { keteranganData } from "../../test/data";
 
 // Status Badge
 function StatusBadge({ status }) {
@@ -42,10 +42,10 @@ function Field({ label, value }) {
   );
 }
 
-export default function RekomendasiDetail() {
+export default function KeteranganDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = rekomendasiData.find((d) => d.id === Number(id));
+  const item = keteranganData.find((d) => d.id === Number(id));
 
   if (!item) {
     return (
@@ -63,8 +63,8 @@ export default function RekomendasiDetail() {
   return (
     <MainLayout>
       <div className="px-4 pb-0 lg:px-8 lg:pt-7">
-        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Data Surat / Rekomendasi / Detail</p>
-        <h1 className="hidden lg:block text-2xl lg:text-3xl font-bold text-primary-1 mb-1">Data Surat Rekomendasi</h1>
+        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Data Surat / Keterangan / Detail</p>
+        <h1 className="hidden lg:block text-2xl lg:text-3xl font-bold text-primary-1 mb-1">Data Surat Keterangan</h1>
       </div>
 
       <div className="hidden lg:block h-6" />
@@ -74,7 +74,7 @@ export default function RekomendasiDetail() {
         {/* Panel Header — Desktop */}
         <div className="hidden lg:flex items-start justify-between gap-4 mb-1">
           <div>
-            <h2 className="text-xl font-bold text-primary-1">Detail Surat Rekomendasi</h2>
+            <h2 className="text-xl font-bold text-primary-1">Detail Surat Keterangan</h2>
             <p className="text-sm text-neutral-2 mt-0.5">No. Surat: {item.noSurat}</p>
           </div>
           <StatusBadge status={item.status} />
@@ -82,7 +82,7 @@ export default function RekomendasiDetail() {
 
         {/* Panel Header — Mobile */}
         <div className="lg:hidden px-4 pt-4 mb-1">
-          <h2 className="text-xl font-bold text-primary-1">Detail Surat Rekomendasi</h2>
+          <h2 className="text-xl font-bold text-primary-1">Detail Surat Keterangan</h2>
           <p className="text-sm text-neutral-2 mt-0.5">No. Surat: {item.noSurat}</p>
           <div className="mt-3"><StatusBadge status={item.status} /></div>
         </div>
