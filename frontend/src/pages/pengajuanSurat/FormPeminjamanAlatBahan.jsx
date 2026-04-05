@@ -383,7 +383,7 @@ export default function FormPeminjamanAlatBahan() {
           {isEdit ? "Ubah Surat Peminjaman Alat/Bahan" : "Pengajuan Surat Peminjaman Alat/Bahan"}
         </h1>
         <p className="lg:hidden text-[13px] text-neutral-2 mt-1">
-          Silakan lengkapi formulir di bawah ini untuk mengajukan peminjaman alat/bahan
+          Silahkan lengkapi formulir di bawah ini untuk mengajukan peminjaman alat/bahan
         </p>
       </div>
 

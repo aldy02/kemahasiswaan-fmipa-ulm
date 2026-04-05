@@ -226,7 +226,7 @@ export default function FormPeminjamanRuangan() {
         </h1>
         {/* Mobile subtitle */}
         <p className="lg:hidden text-[13px] text-neutral-2 mt-1">
-          Silakan lengkapi formulir di bawah ini untuk mengajukan peminjaman ruangan
+          Silahkan lengkapi formulir di bawah ini untuk mengajukan peminjaman ruangan
         </p>
       </div>
 

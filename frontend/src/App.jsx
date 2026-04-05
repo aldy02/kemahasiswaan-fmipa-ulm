@@ -19,6 +19,7 @@ import KeteranganMahasiswaKuliahDetail from "./pages/dataSurat/KeteranganMahasis
 import FormPeminjamanRuangan from "./pages/pengajuanSurat/FormPeminjamanRuangan";
 import FormPeminjamanAlatBahan from "./pages/pengajuanSurat/FormPeminjamanAlatBahan";
 import FormIzinTidakMengikutiKuliah from "./pages/pengajuanSurat/FormIzinTidakMengikutiKuliah";
+import FormIzinPraktikumUlang from "./pages/pengajuanSurat/FormIzinPraktikumUlang";
 
 function App() {
 
@@ -47,6 +48,8 @@ function App() {
       <Route path="/pengajuan-surat/peminjaman-alat-bahan/edit/:id" element={<FormPeminjamanAlatBahan />} />
       <Route path="/pengajuan-surat/izin-tidak-mengikuti-kuliah" element={<FormIzinTidakMengikutiKuliah />} />
       <Route path="/pengajuan-surat/izin-tidak-mengikuti-kuliah/edit/:id" element={<FormIzinTidakMengikutiKuliah />} />
+      <Route path="/pengajuan-surat/izin-praktikum-ulang" element={<FormIzinPraktikumUlang />} />
+      <Route path="/pengajuan-surat/izin-praktikum-ulang/edit/:id" element={<FormIzinPraktikumUlang />} />
     </Routes>
   )
 }

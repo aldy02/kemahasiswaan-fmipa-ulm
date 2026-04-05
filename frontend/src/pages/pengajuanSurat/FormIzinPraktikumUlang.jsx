@@ -1,9 +1,9 @@
-// src/pages/FormIzinTidakMengikutiKuliah.jsx
+// src/pages/FormIzinPraktikumUlang.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Send, Users, GraduationCap, CalendarDays, Info, MessageSquare, Plus, X } from "lucide-react";
+import { ArrowLeft, Send, Users, CalendarDays, Info, MessageSquare, Plus, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import { izinTidakMengikutiKuliahData } from "../../test/data";
+import { izinPraktikumUlangData } from "../../test/data";
 
 const PRODI_OPTIONS = [
   "S1 Matematika",
@@ -109,8 +109,9 @@ function toInputDate(str) {
 }
 
 // ── Data Mahasiswa dynamic list ───────────────────────────────────────────────
+// Fields per item: NIM, Nama, Mata Kuliah, Program Studi
 function MahasiswaSection({ items, setItems }) {
-  const addItem = () => setItems([...items, { nim: "", nama: "", prodi: "" }]);
+  const addItem = () => setItems([...items, { nim: "", nama: "", mataKuliah: "", prodi: "" }]);
   const removeItem = (i) => setItems(items.filter((_, idx) => idx !== i));
   const updateItem = (i, field, val) => setItems(items.map((it, idx) => idx === i ? { ...it, [field]: val } : it));
 
@@ -132,7 +133,7 @@ function MahasiswaSection({ items, setItems }) {
             )}
           </div>
 
-          {/* Desktop: 3 fields in row + delete */}
+          {/* Desktop: 4 fields in row + delete */}
           <div className="hidden lg:flex items-end gap-3">
             <div className="flex-1">
               <Label required>NIM Mahasiswa</Label>
@@ -141,6 +142,10 @@ function MahasiswaSection({ items, setItems }) {
             <div className="flex-1">
               <Label required>Nama Mahasiswa</Label>
               <TextInput placeholder="Masukkan nama mahasiswa" value={it.nama} onChange={(v) => updateItem(i, "nama", v)} />
+            </div>
+            <div className="flex-1">
+              <Label required>Mata Kuliah</Label>
+              <TextInput placeholder="Masukkan mata kuliah" value={it.mataKuliah} onChange={(v) => updateItem(i, "mataKuliah", v)} />
             </div>
             <div className="flex-1">
               <Label required>Program Studi Mahasiswa</Label>
@@ -160,6 +165,7 @@ function MahasiswaSection({ items, setItems }) {
           <div className="lg:hidden flex flex-col gap-3">
             <div><Label required>NIM Mahasiswa</Label><TextInput placeholder="Masukkan NIM mahasiswa" value={it.nim} onChange={(v) => updateItem(i, "nim", v)} /></div>
             <div><Label required>Nama Mahasiswa</Label><TextInput placeholder="Masukkan nama mahasiswa" value={it.nama} onChange={(v) => updateItem(i, "nama", v)} /></div>
+            <div><Label required>Mata Kuliah</Label><TextInput placeholder="Masukkan mata kuliah" value={it.mataKuliah} onChange={(v) => updateItem(i, "mataKuliah", v)} /></div>
             <div><Label required>Program Studi Mahasiswa</Label><SelectInput placeholder="Pilih program studi mahasiswa" value={it.prodi} onChange={(v) => updateItem(i, "prodi", v)} options={PRODI_OPTIONS} /></div>
           </div>
           {i < items.length - 1 && <hr className="lg:hidden border-slate-200 mt-5" />}
@@ -177,15 +183,12 @@ function MahasiswaSection({ items, setItems }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function FormIzinTidakMengikutiKuliah() {
+export default function FormIzinPraktikumUlang() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
 
-  const [mahasiswaItems, setMahasiswaItems] = useState([{ nim: "", nama: "", prodi: "" }]);
-  const [namaDosen, setNamaDosen] = useState("");
-  const [mataKuliah, setMataKuliah] = useState("");
-  const [prodiDosen, setProdiDosen] = useState("");
+  const [mahasiswaItems, setMahasiswaItems] = useState([{ nim: "", nama: "", mataKuliah: "", prodi: "" }]);
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalAkhir, setTanggalAkhir] = useState("");
   const [sebab, setSebab] = useState("");
@@ -194,40 +197,25 @@ export default function FormIzinTidakMengikutiKuliah() {
 
   useEffect(() => {
     if (!isEdit) return;
-    const item = izinTidakMengikutiKuliahData.find((d) => d.id === Number(id));
+    const item = izinPraktikumUlangData.find((d) => d.id === Number(id));
     if (!item) return;
-    setMahasiswaItems([{ nim: item.nim || "", nama: item.nama || "", prodi: item.prodi || "" }]);
-    setNamaDosen(item.namaDosen || "");
-    setMataKuliah(item.mataKuliah || "");
-    setProdiDosen(item.prodiDosen || "");
+    setMahasiswaItems([{
+      nim: item.nim || "",
+      nama: item.nama || "",
+      mataKuliah: item.mataKuliah || "",
+      prodi: item.prodi || "",
+    }]);
     setTanggalMulai(toInputDate(item.tanggalMulai));
     setTanggalAkhir(toInputDate(item.tanggalAkhir));
-    setSebab(item.sebab || "");
+    setSebab(item.sebab === "-" ? "" : item.sebab || "");
     setTempat(item.tempat === "-" ? "" : item.tempat || "");
     setKeterangan(item.keterangan === "-" ? "" : item.keterangan || "");
   }, [id, isEdit]);
 
-  // ── Sections ──────────────────────────────────────────────────────────────
+  // ── Sections ─────────────────────────────────────────────────────────────
   const sectionMahasiswa = (
     <Card icon={<Users size={18} />} title="Data Mahasiswa" subtitle="Informasi lengkap mahasiswa yang mengajukan izin tidak mengikuti kuliah">
       <MahasiswaSection items={mahasiswaItems} setItems={setMahasiswaItems} />
-    </Card>
-  );
-
-  const sectionMataKuliah = (
-    <Card icon={<GraduationCap size={18} />} title="Informasi Mata Kuliah" subtitle="Data mata kuliah dan dosen pengampu yang akan ditinggalkan">
-      {/* Desktop: 3 cols */}
-      <div className="hidden lg:grid lg:grid-cols-3 gap-4">
-        <div><Label required>Nama Dosen</Label><TextInput placeholder="Masukkan nama dosen pengampu" value={namaDosen} onChange={setNamaDosen} /></div>
-        <div><Label required>Mata Kuliah</Label><TextInput placeholder="Masukkan nama mata kuliah" value={mataKuliah} onChange={setMataKuliah} /></div>
-        <div><Label required>Program Studi</Label><SelectInput placeholder="Masukkan program studi dosen" value={prodiDosen} onChange={setProdiDosen} options={PRODI_OPTIONS} /></div>
-      </div>
-      {/* Mobile: stacked */}
-      <div className="lg:hidden flex flex-col gap-3">
-        <div><Label required>Nama Dosen</Label><TextInput placeholder="Masukkan nama dosen pengampu" value={namaDosen} onChange={setNamaDosen} /></div>
-        <div><Label required>Mata Kuliah</Label><TextInput placeholder="Masukkan nama mata kuliah" value={mataKuliah} onChange={setMataKuliah} /></div>
-        <div><Label required>Program Studi</Label><SelectInput placeholder="Masukkan program studi dosen" value={prodiDosen} onChange={setProdiDosen} options={PRODI_OPTIONS} /></div>
-      </div>
     </Card>
   );
 
@@ -241,24 +229,24 @@ export default function FormIzinTidakMengikutiKuliah() {
   );
 
   const sectionAlasan = (
-      <Card icon={<Info size={18} />} title="Alasan & Tempat Izin" subtitle="Sebab dan lokasi terkait izin tidak mengikuti kuliah">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <Label required>Sebab</Label>
-            <textarea value={sebab} onChange={(e) => setSebab(e.target.value)} placeholder="Masukkan alasan tidak mengikuti kuliah" rows={3}
-              className="w-full px-3.5 py-3 text-[13px] lg:text-sm text-primary-1 bg-gray-50 border border-gray-200 rounded-xl outline-none placeholder-neutral-2 focus:ring-2 focus:ring-primary-2 focus:border-transparent focus:bg-white transition-all resize-none" />
-          </div>
-          <div>
-            <Label required>Tempat</Label>
-            <textarea value={tempat} onChange={(e) => setTempat(e.target.value)} placeholder="Masukkan lokasi/tempat tujuan" rows={3}
-              className="w-full px-3.5 py-3 text-[13px] lg:text-sm text-primary-1 bg-gray-50 border border-gray-200 rounded-xl outline-none placeholder-neutral-2 focus:ring-2 focus:ring-primary-2 focus:border-transparent focus:bg-white transition-all resize-none" />
-          </div>
+    <Card icon={<Info size={18} />} title="Alasan & Tempat Izin" subtitle="Sebab dan lokasi terkait izin tidak mengikuti kuliah">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <Label required>Sebab</Label>
+          <textarea value={sebab} onChange={(e) => setSebab(e.target.value)} placeholder="Masukkan alasan tidak mengikuti kuliah" rows={3}
+            className="w-full px-3.5 py-3 text-[13px] lg:text-sm text-primary-1 bg-gray-50 border border-gray-200 rounded-xl outline-none placeholder-neutral-2 focus:ring-2 focus:ring-primary-2 focus:border-transparent focus:bg-white transition-all resize-none" />
         </div>
-      </Card>
-    );
+        <div>
+          <Label required>Tempat</Label>
+          <textarea value={tempat} onChange={(e) => setTempat(e.target.value)} placeholder="Masukkan lokasi/tempat tujuan" rows={3}
+            className="w-full px-3.5 py-3 text-[13px] lg:text-sm text-primary-1 bg-gray-50 border border-gray-200 rounded-xl outline-none placeholder-neutral-2 focus:ring-2 focus:ring-primary-2 focus:border-transparent focus:bg-white transition-all resize-none" />
+        </div>
+      </div>
+    </Card>
+  );
 
   const sectionTambahan = (
-    <Card icon={<MessageSquare size={18} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan terkait izin tidak mengikuti kuliah">
+    <Card icon={<MessageSquare size={18} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan terkait izin praktikum ulang">
       <Label>Keterangan</Label>
       <textarea value={keterangan} onChange={(e) => setKeterangan(e.target.value)} placeholder="Masukkan keterangan tambahan jika diperlukan" rows={4}
         className="w-full px-3.5 py-3 text-[13px] lg:text-sm text-primary-1 bg-gray-50 border border-gray-200 rounded-xl outline-none placeholder-neutral-2 focus:ring-2 focus:ring-primary-2 focus:border-transparent focus:bg-white transition-all resize-none" />
@@ -269,12 +257,12 @@ export default function FormIzinTidakMengikutiKuliah() {
     <MainLayout>
       {/* ── Page header ── */}
       <div className="px-4 pt-5 pb-0 lg:px-8 lg:pt-7">
-        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Pengajuan Surat / Izin Tidak Mengikuti Kuliah</p>
+        <p className="hidden lg:block text-sm text-neutral-1 mb-1">Pengajuan Surat / Izin Praktikum Ulang</p>
         <h1 className="text-2xl lg:text-3xl font-bold text-primary-1 leading-tight">
-          {isEdit ? "Ubah Surat Izin Tidak Mengikuti Kuliah" : "Pengajuan Surat Izin Tidak Mengikuti Kuliah"}
+          {isEdit ? "Ubah Surat Izin Praktikum Ulang" : "Pengajuan Surat Izin Praktikum Ulang"}
         </h1>
         <p className="lg:hidden text-[13px] text-neutral-2 mt-1">
-          Silahkan lengkapi formulir di bawah ini untuk mengajukan izin tidak mengikuti kuliah
+          Silahkan lengkapi formulir di bawah ini untuk mengajukan izin praktikum ulang
         </p>
       </div>
 
@@ -284,11 +272,10 @@ export default function FormIzinTidakMengikutiKuliah() {
 
         {/* Desktop: white outer panel */}
         <div className="hidden lg:block bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.05)] p-8">
-          <h2 className="text-xl font-bold text-primary-1 mb-1">Form Izin Tidak Mengikuti Kuliah</h2>
-          <p className="text-sm text-neutral-2 mb-7">Silakan lengkapi formulir di bawah ini untuk mengajukan izin tidak mengikuti kuliah</p>
+          <h2 className="text-xl font-bold text-primary-1 mb-1">Form Izin Praktikum Ulang</h2>
+          <p className="text-sm text-neutral-2 mb-7">Silakan lengkapi formulir di bawah ini untuk mengajukan izin praktikum ulang</p>
           <div className="flex flex-col gap-5">
             {sectionMahasiswa}
-            {sectionMataKuliah}
             {sectionJadwal}
             {sectionAlasan}
             {sectionTambahan}
@@ -305,10 +292,9 @@ export default function FormIzinTidakMengikutiKuliah() {
           </div>
         </div>
 
-        {/* Mobile: cards stacked on page background */}
+        {/* Mobile: cards stacked */}
         <div className="lg:hidden flex flex-col gap-4 px-4 pt-4">
           {sectionMahasiswa}
-          {sectionMataKuliah}
           {sectionJadwal}
           {sectionAlasan}
           {sectionTambahan}
