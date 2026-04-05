@@ -66,7 +66,11 @@ function DesktopTable({ data, navigate }) {
                   >
                     <FileSearchCorner size={20} />
                   </button>
-                  <button title="Ubah" className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-colors">
+                  <button
+                    onClick={() => navigate(`/pengajuan-surat/peminjaman-alat-bahan/edit/${item.id}`)}
+                    title="Ubah"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-colors"
+                  >
                     <SquarePen size={20} />
                   </button>
                   <button title="Hapus" className="w-8 h-8 flex items-center justify-center rounded-lg text-error-1 hover:text-red-900 transition-colors">
@@ -112,7 +116,7 @@ function MobileCard({ item, navigate }) {
 
       <div className="flex justify-end gap-2 mt-4">
         <button
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); navigate(`/pengajuan-surat/peminjaman-alat-bahan/edit/${item.id}`); }}
           className="inline-flex items-center gap-1.5 border border-primary-2 text-primary-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium hover:bg-primary-2/5 transition-colors"
         >
           <SquarePen size={13} /> Ubah
@@ -163,7 +167,7 @@ function Pagination({ current, total, onChange }) {
 
 // Main Page
 export default function PeminjamanAlatBahan() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // ✅ di dalam komponen
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
