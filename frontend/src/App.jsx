@@ -20,6 +20,9 @@ import FormPeminjamanRuangan from "./pages/pengajuanSurat/FormPeminjamanRuangan"
 import FormPeminjamanAlatBahan from "./pages/pengajuanSurat/FormPeminjamanAlatBahan";
 import FormIzinTidakMengikutiKuliah from "./pages/pengajuanSurat/FormIzinTidakMengikutiKuliah";
 import FormIzinPraktikumUlang from "./pages/pengajuanSurat/FormIzinPraktikumUlang";
+import FormRekomendasi from "./pages/pengajuanSurat/FormRekomendasi";
+import FormKeterangan from "./pages/pengajuanSurat/FormKeterangan";
+import FormKeteranganMahasiswaKuliah from "./pages/pengajuanSurat/FormKeteranganMahasiswaKuliah";
 
 function App() {
 
@@ -50,6 +53,12 @@ function App() {
       <Route path="/pengajuan-surat/izin-tidak-mengikuti-kuliah/edit/:id" element={<FormIzinTidakMengikutiKuliah />} />
       <Route path="/pengajuan-surat/izin-praktikum-ulang" element={<FormIzinPraktikumUlang />} />
       <Route path="/pengajuan-surat/izin-praktikum-ulang/edit/:id" element={<FormIzinPraktikumUlang />} />
+      <Route path="/pengajuan-surat/rekomendasi" element={<FormRekomendasi />} />
+      <Route path="/pengajuan-surat/rekomendasi/edit/:id" element={<FormRekomendasi />} />
+      <Route path="/pengajuan-surat/keterangan" element={<FormKeterangan />} />
+      <Route path="/pengajuan-surat/keterangan/edit/:id" element={<FormKeterangan />} />
+      <Route path="/pengajuan-surat/keterangan-mahasiswa-kuliah" element={<FormKeteranganMahasiswaKuliah />} />
+      <Route path="/pengajuan-surat/keterangan-mahasiswa-kuliah/edit/:id" element={<FormKeteranganMahasiswaKuliah />} />
     </Routes>
   )
 }

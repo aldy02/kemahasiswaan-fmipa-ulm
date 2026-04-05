@@ -204,7 +204,7 @@ export default function FormIzinTidakMengikutiKuliah() {
     setTanggalAkhir(toInputDate(item.tanggalAkhir));
     setSebab(item.sebab || "");
     setTempat(item.tempat === "-" ? "" : item.tempat || "");
-    setKeterangan(item.keterangan === "-" ? "" : item.keterangan || "");
+    setKeterangan(item.keterangan || "");
   }, [id, isEdit]);
 
   // ── Sections ──────────────────────────────────────────────────────────────
