@@ -1,3 +1,4 @@
+// src/pages/IzinTidakMengikutiKuliah.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Plus, SquarePen, Trash2, FileSearchCorner, Check, X } from "lucide-react";
@@ -44,9 +45,9 @@ function DesktopTable({ data, navigate }) {
           {data.map((item) => (
             <tr key={item.id} className="hover:bg-slate-50 transition-colors duration-100">
               <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.noSurat}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.nama}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.nim}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.prodi}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.nama ?? "-"}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.nim ?? "-"}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.prodi ?? "-"}</td>
               <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mataKuliah}</td>
               <td className="px-4 py-3.5 border-b border-slate-50"><StatusBadge status={item.status} /></td>
               <td className="px-4 py-3.5 border-b border-slate-50">
@@ -58,7 +59,7 @@ function DesktopTable({ data, navigate }) {
                   >
                     <FileSearchCorner size={20} />
                   </button>
-                  <button title="Ubah" className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-opacity"><SquarePen size={20} /></button>
+                  <button onClick={() => navigate(`/pengajuan-surat/izin-tidak-mengikuti-kuliah/edit/${item.id}`)} title="Ubah" className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-opacity"><SquarePen size={20} /></button>
                   <button title="Hapus" className="w-8 h-8 flex items-center justify-center rounded-lg text-error-1 hover:text-red-900 transition-opacity"><Trash2 size={20} /></button>
                 </div>
               </td>
@@ -79,8 +80,8 @@ function MobileCard({ item, navigate }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-bold text-[15px] text-primary-1">{item.nama}</p>
-          <p className="text-[13px] text-neutral-1 mt-0.5">{item.nim}</p>
+          <p className="font-bold text-[15px] text-primary-1">{item.mahasiswas?.[0]?.nama ?? "-"}</p>
+          <p className="text-[13px] text-neutral-1 mt-0.5">{item.mahasiswas?.[0]?.nim ?? "-"}</p>
         </div>
         <StatusBadge status={item.status} />
       </div>
@@ -97,7 +98,7 @@ function MobileCard({ item, navigate }) {
       ))}
       <div className="flex justify-end gap-2 mt-4">
         <button
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); navigate(`/pengajuan-surat/izin-tidak-mengikuti-kuliah/edit/${item.id}`); }}
           className="inline-flex items-center gap-1.5 border border-primary-2 text-primary-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium hover:bg-primary-2/5 transition-colors"
         >
           <SquarePen size={13} /> Ubah
@@ -130,9 +131,9 @@ export default function IzinTidakMengikutiKuliah() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const filtered = izinTidakMengikutiKuliahData.filter((d) =>
-    d.nama.toLowerCase().includes(search.toLowerCase())
-  );
+const filtered = izinTidakMengikutiKuliahData.filter((d) =>
+  d.mahasiswas?.[0]?.nama?.toLowerCase().includes(search.toLowerCase())
+);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 

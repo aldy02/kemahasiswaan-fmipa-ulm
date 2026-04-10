@@ -1,3 +1,4 @@
+// src/pages/IzinPraktikumUlang.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Plus, SquarePen, Trash2, FileSearchCorner, Check, X } from "lucide-react";
@@ -9,8 +10,8 @@ const ITEMS_PER_PAGE = 10;
 function StatusBadge({ status }) {
   const map = {
     Diterima: { iconBg: "bg-succes-1", pillBg: "bg-succes-1", iconColor: "text-succes-1", icon: <Check size={14} strokeWidth={3} />, textColor: "text-primary-1" },
-    Ditolak:  { iconBg: "bg-error-2",  pillBg: "bg-error-2",  iconColor: "text-error-2",  icon: <X size={14} strokeWidth={3} />,     textColor: "text-primary-1" },
-    Revisi:   { iconBg: "bg-warning-1", pillBg: "bg-warning-1", iconColor: "text-warning-1", icon: <span className="font-black text-[13px] leading-none">!</span>, textColor: "text-primary-1" },
+    Ditolak: { iconBg: "bg-error-2", pillBg: "bg-error-2", iconColor: "text-error-2", icon: <X size={14} strokeWidth={3} />, textColor: "text-primary-1" },
+    Revisi: { iconBg: "bg-warning-1", pillBg: "bg-warning-1", iconColor: "text-warning-1", icon: <span className="font-black text-[13px] leading-none">!</span>, textColor: "text-primary-1" },
   };
   const cfg = map[status] ?? { iconBg: "bg-slate-400", pillBg: "bg-slate-300", icon: null, textColor: "text-primary-1" };
   return (
@@ -42,10 +43,10 @@ function DesktopTable({ data, navigate }) {
           {data.map((item) => (
             <tr key={item.id} className="hover:bg-slate-50 transition-colors duration-100">
               <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.noSurat}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.nama}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.nim}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.prodi}</td>
-              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mataKuliah}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.nama ?? "-"}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.nim ?? "-"}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.prodi ?? "-"}</td>
+              <td className="px-4 py-3.5 text-sm font-semibold text-primary-1 border-b border-slate-50">{item.mahasiswas?.[0]?.mataKuliah}</td>
               <td className="px-4 py-3.5 border-b border-slate-50"><StatusBadge status={item.status} /></td>
               <td className="px-4 py-3.5 border-b border-slate-50">
                 <div className="flex items-center gap-1.5">
@@ -56,7 +57,7 @@ function DesktopTable({ data, navigate }) {
                   >
                     <FileSearchCorner size={20} />
                   </button>
-                  <button title="Ubah" className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-opacity"><SquarePen size={20} /></button>
+                  <button onClick={() => navigate(`/pengajuan-surat/izin-praktikum-ulang/edit/${item.id}`)} title="Ubah" className="w-8 h-8 flex items-center justify-center rounded-lg text-primary-2 hover:text-blue-700 transition-opacity"><SquarePen size={20} /></button>
                   <button title="Hapus" className="w-8 h-8 flex items-center justify-center rounded-lg text-error-1 hover:text-red-900 transition-opacity"><Trash2 size={20} /></button>
                 </div>
               </td>
@@ -77,8 +78,8 @@ function MobileCard({ item, navigate }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-bold text-[15px] text-primary-1">{item.nama}</p>
-          <p className="text-[13px] text-neutral-1 mt-0.5">{item.nim}</p>
+          <p className="font-bold text-[15px] text-primary-1">{item.mahasiswas?.[0]?.nama ?? "-"}</p>
+          <p className="text-[13px] text-neutral-1 mt-0.5">{item.mahasiswas?.[0]?.nim ?? "-"}</p>
         </div>
         <StatusBadge status={item.status} />
       </div>
@@ -95,7 +96,7 @@ function MobileCard({ item, navigate }) {
       ))}
       <div className="flex justify-end gap-2 mt-4">
         <button
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); navigate(`/pengajuan-surat/izin-praktikum-ulang/edit/${item.id}`); }}
           className="inline-flex items-center gap-1.5 border border-primary-2 text-primary-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium hover:bg-primary-2/5 transition-colors"
         >
           <SquarePen size={13} /> Ubah
@@ -129,7 +130,9 @@ export default function IzinPraktikumUlang() {
   const [page, setPage] = useState(1);
 
   const filtered = izinPraktikumUlangData.filter((d) =>
-    d.nama.toLowerCase().includes(search.toLowerCase())
+    d.mahasiswas?.some((mhs) =>
+      mhs.nama?.toLowerCase().includes(search.toLowerCase())
+    )
   );
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
