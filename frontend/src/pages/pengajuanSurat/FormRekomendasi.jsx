@@ -51,7 +51,7 @@ export default function FormRekomendasi() {
         setTahunAjaran(item.tahunAjaran || "");
         setKeperluan(item.keperluan || "");
         setTanggalPengajuan(toFormDate(item.tanggalPengajuan));
-        setKeterangan(item.keterangan === "Surat bisa diambil di bagian kemahasiswaan" ? "" : item.keterangan || "");
+        setKeterangan(item.keterangan || "");
     }, [id, isEdit]);
 
     const title = isEdit ? "Ubah Surat Rekomendasi" : "Pengajuan Surat Rekomendasi";
