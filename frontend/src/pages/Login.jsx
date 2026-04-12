@@ -35,7 +35,7 @@ export default function Login() {
     setLoading(true);
     try {
       // Cari user by nim di MockAPI
-      const res = await api.get("/users", { params: { nim: nim.trim() } });
+      const res = await api.get("/users");
       const users = res.data;
       const user = users.find(
         (u) => u.nim === nim.trim() && u.password === password

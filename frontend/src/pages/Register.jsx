@@ -43,58 +43,60 @@ export default function Register() {
     return null;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
 
-    const validationError = validate();
-    if (validationError) { setError(validationError); return; }
+  const validationError = validate();
+  if (validationError) { setError(validationError); return; }
 
-    setLoading(true);
-    try {
-      // Cek apakah NIM sudah terdaftar
-      const nimCheck = await api.get("/users", { params: { nim: form.nim.trim() } });
-      if (nimCheck.data.some((u) => u.nim === form.nim.trim())) {
-        setError("NIM/NIP sudah terdaftar. Silakan gunakan NIM/NIP lain.");
-        return;
-      }
+  setLoading(true);
+  try {
+    // Ambil semua user sekaligus, filter di client
+    const allUsersRes = await api.get("/users");
+    const allUsers = allUsersRes.data;
 
-      // Cek apakah email sudah terdaftar
-      const emailCheck = await getUserByEmail(form.email.trim().toLowerCase());
-      if (emailCheck.data.some((u) => u.email === form.email.trim().toLowerCase())) {
-        setError("Email sudah terdaftar. Silakan gunakan email lain.");
-        return;
-      }
-
-      // Buat user baru
-      const payload = {
-        nim: form.nim.trim(),
-        namaDepan: form.namaDepan.trim(),
-        namaBelakang: form.namaBelakang.trim(),
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-        level: "mahasiswa",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      const res = await createUser(payload);
-      const newUser = res.data;
-
-      setSuccess("Akun berhasil dibuat! Mengalihkan ke dashboard...");
-
-      // Auto-login setelah register
-      setTimeout(() => {
-        saveUser(newUser);
-        navigate("/", { replace: true });
-      }, 1200);
-    } catch (err) {
-      setError("Terjadi kesalahan. Periksa koneksi internet Anda.");
-    } finally {
-      setLoading(false);
+    // Cek NIM
+    if (allUsers.some((u) => u.nim === form.nim.trim())) {
+      setError("NIM/NIP sudah terdaftar. Silakan gunakan NIM/NIP lain.");
+      return;
     }
-  };
+
+    // Cek email
+    if (allUsers.some((u) => u.email === form.email.trim().toLowerCase())) {
+      setError("Email sudah terdaftar. Silakan gunakan email lain.");
+      return;
+    }
+
+    // Buat user baru
+    const payload = {
+      nim: form.nim.trim(),
+      namaDepan: form.namaDepan.trim(),
+      namaBelakang: form.namaBelakang.trim(),
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+      level: "mahasiswa",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const res = await createUser(payload);
+    const newUser = res.data;
+
+    setSuccess("Akun berhasil dibuat! Mengalihkan ke dashboard...");
+
+    setTimeout(() => {
+      saveUser(newUser);
+      navigate("/", { replace: true });
+    }, 1200);
+  } catch (err) {
+    console.error("Register error:", err);
+    setError("Terjadi kesalahan. Periksa koneksi internet Anda.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const inputClass =
     "w-full px-4 py-3 border text-primary-1 border-gray-200 rounded-lg text-sm placeholder-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white";
