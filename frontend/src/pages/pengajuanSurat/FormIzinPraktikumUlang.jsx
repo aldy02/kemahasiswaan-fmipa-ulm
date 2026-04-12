@@ -86,8 +86,8 @@ export default function FormIzinPraktikumUlang() {
     );
     setTanggalMulai(toFormDate(item.tanggalMulai));
     setTanggalAkhir(toFormDate(item.tanggalAkhir));
-    setSebab(item.sebab === "-" ? "" : item.sebab || "");
-    setTempat(item.tempat === "-" ? "" : item.tempat || "");
+    setSebab(item.sebab || "");
+    setTempat(item.tempat || "");
     setKeterangan(item.keterangan|| "");
   }, [id, isEdit]);
 

@@ -55,9 +55,9 @@ export default function FormKeteranganMahasiswaKuliah() {
         setSemester(item.semester || "");
         setTahunAjaran(item.tahunAjaran || "");
         setNamaOrtu(item.namaOrtu || "");
-        setNipOrtu(item.nipOrtu === "-" ? "" : item.nipOrtu || "");
+        setNipOrtu(item.nipOrtu || "");
         setInstansiOrtu(item.instansiOrtu || "");
-        setPangkatOrtu(item.pangkatOrtu === "-" ? "" : item.pangkatOrtu || "");
+        setPangkatOrtu(item.pangkatOrtu || "");
         setJabatanOrtu(item.jabatanOrtu || "");
         setKeterangan(item.keterangan || "");
     }, [id, isEdit]);

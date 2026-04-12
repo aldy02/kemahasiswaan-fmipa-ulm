@@ -1,7 +1,7 @@
-// src/components/Sidebar.jsx
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { House, Mails, Settings, LogOut, ChevronUp, ChevronDown, ChevronLeft } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 const menuItems = [
   {
@@ -15,13 +15,13 @@ const menuItems = [
     icon: <Mails size={20} />,
     key: "pengajuan",
     children: [
-      { label: "Peminjaman ruangan",           path: "/pengajuan-surat/peminjaman-ruangan" },
-      { label: "Peminjaman alat/bahan",        path: "/pengajuan-surat/peminjaman-alat-bahan" },
-      { label: "Izin tidak mengikuti kuliah",  path: "/pengajuan-surat/izin-tidak-mengikuti-kuliah" },
-      { label: "Izin praktikum ulang",         path: "/pengajuan-surat/izin-praktikum-ulang" },
-      { label: "Rekomendasi",                  path: "/pengajuan-surat/rekomendasi" },
-      { label: "Keterangan",                   path: "/pengajuan-surat/keterangan" },
-      { label: "Keterangan mahasiswa kuliah",  path: "/pengajuan-surat/keterangan-mahasiswa-kuliah" },
+      { label: "Peminjaman ruangan", path: "/pengajuan-surat/peminjaman-ruangan" },
+      { label: "Peminjaman alat/bahan", path: "/pengajuan-surat/peminjaman-alat-bahan" },
+      { label: "Izin tidak mengikuti kuliah", path: "/pengajuan-surat/izin-tidak-mengikuti-kuliah" },
+      { label: "Izin praktikum ulang", path: "/pengajuan-surat/izin-praktikum-ulang" },
+      { label: "Rekomendasi", path: "/pengajuan-surat/rekomendasi" },
+      { label: "Keterangan", path: "/pengajuan-surat/keterangan" },
+      { label: "Keterangan mahasiswa kuliah", path: "/pengajuan-surat/keterangan-mahasiswa-kuliah" },
     ],
   },
   {
@@ -29,13 +29,13 @@ const menuItems = [
     icon: <Mails size={20} />,
     key: "data",
     children: [
-      { label: "Peminjaman ruangan",           path: "/data-surat/peminjaman-ruangan" },
-      { label: "Peminjaman alat/bahan",        path: "/data-surat/peminjaman-alat-bahan" },
-      { label: "Izin tidak mengikuti kuliah",  path: "/data-surat/izin-tidak-mengikuti-kuliah" },
-      { label: "Izin praktikum ulang",         path: "/data-surat/izin-praktikum-ulang" },
-      { label: "Rekomendasi",                  path: "/data-surat/rekomendasi" },
-      { label: "Keterangan",                   path: "/data-surat/keterangan" },
-      { label: "Keterangan mahasiswa kuliah",  path: "/data-surat/keterangan-mahasiswa-kuliah" },
+      { label: "Peminjaman ruangan", path: "/data-surat/peminjaman-ruangan" },
+      { label: "Peminjaman alat/bahan", path: "/data-surat/peminjaman-alat-bahan" },
+      { label: "Izin tidak mengikuti kuliah", path: "/data-surat/izin-tidak-mengikuti-kuliah" },
+      { label: "Izin praktikum ulang", path: "/data-surat/izin-praktikum-ulang" },
+      { label: "Rekomendasi", path: "/data-surat/rekomendasi" },
+      { label: "Keterangan", path: "/data-surat/keterangan" },
+      { label: "Keterangan mahasiswa kuliah", path: "/data-surat/keterangan-mahasiswa-kuliah" },
     ],
   },
   {
@@ -48,8 +48,9 @@ const menuItems = [
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  // Auto-open parent jika child route sedang aktif
   const getInitialOpenMenus = () => {
     const open = { pengajuan: false, data: false };
     menuItems.forEach((item) => {
@@ -64,6 +65,16 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const toggleMenu = (key) =>
     setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const fullName = user ? `${user.namaDepan} ${user.namaBelakang}` : "-";
+  const nim = user?.nim ?? "-";
+  // Generate avatar dinamis berdasarkan nim
+  const avatarUrl = `https://api.dicebear.com/9.x/micah/svg?backgroundColor=d1d4f9,b6e3f4&seed=${nim}`;
 
   return (
     <>
@@ -91,17 +102,17 @@ export default function Sidebar({ isOpen, onClose }) {
           <div className="relative flex items-center gap-3 px-6 pt-7 pb-6 border-b border-slate-100 shrink-0">
             <div className="w-13 h-13 rounded-2xl overflow-hidden bg-indigo-50 shrink-0">
               <img
-                src="https://api.dicebear.com/9.x/micah/svg?backgroundColor=d1d4f9,b6e3f4&seed=Aidan"
+                src={avatarUrl}
                 alt="avatar"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="block text-[14px] font-bold text-primary-1 leading-tight">
-                Aldy Rahman
+              <span className="block text-[14px] font-bold text-primary-1 leading-tight truncate">
+                {fullName}
               </span>
               <span className="block text-[12px] text-neutral-1 mt-0.5">
-                2011016210022
+                {nim}
               </span>
             </div>
 
@@ -196,7 +207,10 @@ export default function Sidebar({ isOpen, onClose }) {
 
           {/* Logout */}
           <div className="px-4 pb-5 pt-3 border-t border-slate-100 shrink-0">
-            <button className="flex items-center gap-3.5 w-full px-4 py-3 rounded-xl text-[14px] font-medium text-neutral-1 hover:text-error-3 hover:bg-red-50 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3.5 w-full px-4 py-3 rounded-xl text-[14px] font-medium text-neutral-1 hover:text-error-3 hover:bg-red-50 transition-colors"
+            >
               <LogOut size={20} className="shrink-0" />
               <span>Logout</span>
             </button>
