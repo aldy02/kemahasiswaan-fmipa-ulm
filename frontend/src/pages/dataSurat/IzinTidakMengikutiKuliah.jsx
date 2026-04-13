@@ -1,7 +1,8 @@
-// src/pages/IzinTidakMengikutiKuliah.jsx
+// src/pages/data-surat/IzinTidakMengikutiKuliah.jsx
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SuratPageLayout, StatusBadge } from "../../components/DataSuratComponents";
-import { izinTidakMengikutiKuliahData } from "../../test/data";
+import { getSurats, deleteSurat } from "../../api/suratApi";
 
 const columns = [
   { key: "noSurat",    label: "No Surat" },
@@ -15,6 +16,27 @@ const columns = [
 export default function IzinTidakMengikutiKuliah() {
   const navigate = useNavigate();
 
+  const [data,    setData]    = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState("");
+
+  const fetchData = () => {
+    setLoading(true);
+    getSurats()
+      .then((res) => {
+        setData(res.data.filter((s) => s.jenisSurat === "Izin Tidak Mengikuti Kuliah"));
+      })
+      .catch(() => setError("Gagal memuat data. Periksa koneksi Anda."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (item) => {
+    await deleteSurat(item.id);
+    fetchData();
+  };
+
   return (
     <SuratPageLayout
       breadcrumb="Data Surat / Izin Tidak Mengikuti Kuliah"
@@ -22,7 +44,9 @@ export default function IzinTidakMengikutiKuliah() {
       pageSubtitle="Informasi data surat izin tidak mengikuti kuliah"
       cardTitle="Izin Tidak Mengikuti Kuliah"
       searchPlaceholder="Cari berdasarkan nama mahasiswa..."
-      data={izinTidakMengikutiKuliahData}
+      data={data}
+      loading={loading}
+      error={error}
       filterFn={(d, s) => d.mahasiswas?.[0]?.nama?.toLowerCase().includes(s.toLowerCase())}
       columns={columns}
       getMobileCardProps={(item) => ({
@@ -38,7 +62,7 @@ export default function IzinTidakMengikutiKuliah() {
       onTambah={() => navigate(`/pengajuan-surat/izin-tidak-mengikuti-kuliah`)}
       onView={(item) => navigate(`/data-surat/izin-tidak-mengikuti-kuliah/${item.id}`)}
       onEdit={(item) => navigate(`/pengajuan-surat/izin-tidak-mengikuti-kuliah/edit/${item.id}`)}
-      onDelete={(item) => console.log("Delete", item.id)}
+      onDelete={handleDelete}
     />
   );
 }

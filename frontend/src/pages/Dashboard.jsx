@@ -1,140 +1,200 @@
 // src/pages/Dashboard.jsx
-import { FileText, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FileText, CheckCircle2, AlertCircle, XCircle, Loader2 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
+import { useAuth } from "../contexts/AuthContext";
+import { getSurats } from "../api/suratApi";
 
-const stats = [
-  {
-    label: "Total pengajuan",
-    value: 16,
-    icon: <FileText size={22} />,
-    iconBg: "bg-indigo-50",
-    iconColor: "text-indigo-500",
-  },
-  {
-    label: "Diterima",
-    value: 15,
-    icon: <CheckCircle2 size={22} />,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-500",
-  },
-  {
-    label: "Revisi",
-    value: 0,
-    icon: <AlertCircle size={22} />,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-500",
-  },
-  {
-    label: "Ditolak",
-    value: 1,
-    icon: <XCircle size={22} />,
-    iconBg: "bg-red-50",
-    iconColor: "text-red-500",
-  },
-];
+// ── Helpers ──────────────────────────────────────────────────────
+function parseDate(str) {
+  // Format: DD-MM-YYYY
+  if (!str) return 0;
+  const [d, m, y] = str.split("-");
+  return new Date(`${y}-${m}-${d}`).getTime();
+}
 
-const activities = [
-  {
-    title: "Workshop Fisika Modern",
-    type: "Peminjaman ruangan",
-    time: "2 hari yang lalu",
-    status: "Diterima",
-  },
-  {
-    title: "Tunjangan Gaji Orang Tua",
-    type: "Keterangan mahasiswa kuliah",
-    time: "5 hari yang lalu",
-    status: "Diterima",
-  },
-  {
-    title: "Latihan Prapon Badminton",
-    type: "Izin praktikum ulang",
-    time: "12 hari yang lalu",
-    status: "Ditolak",
-  },
-];
+function relativeTime(str) {
+  const diff = Date.now() - parseDate(str);
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return "Hari ini";
+  if (days === 1) return "1 hari yang lalu";
+  if (days < 30) return `${days} hari yang lalu`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} bulan yang lalu`;
+  return `${Math.floor(months / 12)} tahun yang lalu`;
+}
 
+function getSuratTitle(surat) {
+  const j = surat.jenisSurat;
+  if (j === "Peminjaman Ruangan") return surat.namaKegiatan || surat.organisasi || "-";
+  if (j === "Peminjaman Alat/Bahan") return surat.kegiatan || surat.organisasi || "-";
+  if (j === "Izin Tidak Mengikuti Kuliah") return surat.mataKuliah || surat.namaDosen || "-";
+  if (j === "Izin Praktikum Ulang") return surat.mahasiswas?.[0]?.mataKuliah || "-";
+  if (j === "Rekomendasi") return surat.keperluan || "-";
+  if (j === "Keterangan") return surat.keperluan || "-";
+  if (j === "Keterangan Mahasiswa Kuliah") return surat.keterangan || "-";
+  return "-";
+}
+
+// ── Sub-components ────────────────────────────────────────────────
 const statusStyle = {
   Diterima: "bg-emerald-500 text-white",
   Ditolak: "bg-red-500 text-white",
   Revisi: "bg-amber-500 text-white",
 };
 
-const StatusIcon = ({ status }) => {
+function StatusIcon({ status }) {
   if (status === "Diterima") return <CheckCircle2 size={13} />;
   if (status === "Ditolak") return <XCircle size={13} />;
   return <AlertCircle size={13} />;
-};
+}
 
+function StatCard({ label, value, icon, iconBg, iconColor, loading }) {
+  return (
+    <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${iconBg} ${iconColor}`}>
+        {icon}
+      </div>
+      <p className="text-xs text-slate-400 mb-1">{label}</p>
+      {loading ? (
+        <div className="h-8 w-10 bg-slate-100 rounded animate-pulse" />
+      ) : (
+        <p className="text-[26px] font-bold text-slate-800 leading-none">{value}</p>
+      )}
+    </div>
+  );
+}
+
+// ── Main ─────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const { user } = useAuth();
+
+  const [surats, setSurats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setLoading(true);
+    // Ambil semua surat lalu filter by userId di client
+    // karena MockAPI tidak support filter query params dengan benar
+    getSurats()
+      .then((res) => {
+        const filtered = res.data.filter((s) => s.userId === user.id);
+        setSurats(filtered);
+      })
+      .catch(() => setError("Gagal memuat data. Periksa koneksi Anda."))
+      .finally(() => setLoading(false));
+  }, [user?.id]);
+
+  const firstName = user?.namaDepan || "Pengguna";
+
+  // Stats
+  const total = surats.length;
+  const diterima = surats.filter((s) => s.status === "Diterima").length;
+  const revisi = surats.filter((s) => s.status === "Revisi").length;
+  const ditolak = surats.filter((s) => s.status === "Ditolak").length;
+
+  // Surat yang benar-benar menunggu = belum ada status keputusan apapun
+  const pending = surats.filter(
+    (s) => !["Diterima", "Ditolak", "Revisi"].includes(s.status)
+  ).length;
+
+  // 3 surat terbaru sort by tanggalPengajuan desc
+  const recentSurats = [...surats]
+    .sort((a, b) => parseDate(b.tanggalPengajuan) - parseDate(a.tanggalPengajuan))
+    .slice(0, 3);
+
+  const stats = [
+    { label: "Total pengajuan", value: total, icon: <FileText size={22} />, iconBg: "bg-indigo-50", iconColor: "text-indigo-500" },
+    { label: "Diterima", value: diterima, icon: <CheckCircle2 size={22} />, iconBg: "bg-emerald-50", iconColor: "text-emerald-500" },
+    { label: "Revisi", value: revisi, icon: <AlertCircle size={22} />, iconBg: "bg-amber-50", iconColor: "text-amber-500" },
+    { label: "Ditolak", value: ditolak, icon: <XCircle size={22} />, iconBg: "bg-red-50", iconColor: "text-red-500" },
+  ];
+
   return (
     <MainLayout>
       <div className="px-6 pt-6 pb-1 lg:px-8 lg:pt-7 lg:pb-1">
 
         {/* Breadcrumb */}
         <p className="text-xs text-slate-400 mb-1">Master User / Dashboard</p>
-        <h1 className="text-2xl lg:text-[28px] font-bold text-primary-1 mb-6">
-          Dashboard
-        </h1>
+        <h1 className="text-2xl lg:text-[28px] font-bold text-primary-1 mb-6">Dashboard</h1>
 
         {/* Welcome Banner */}
         <div className="bg-primary-2 rounded-2xl px-6 py-6 lg:px-8 lg:py-7 mb-5 text-white">
           <h2 className="text-[18px] lg:text-[22px] font-bold mb-1.5">
-            Selamat Datang, Aldy!
+            Selamat Datang, {firstName}!
           </h2>
           <p className="text-sm opacity-90">
-            Anda memiliki 1 pengajuan surat menunggu persetujuan
+            {loading
+              ? "Memuat data surat..."
+              : pending > 0
+                ? `Anda memiliki ${pending} surat yang sedang menunggu persetujuan`
+                : "Semua surat Anda telah diproses"}
           </p>
         </div>
+
+        {/* Error */}
+        {error && (
+          <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 mb-5 text-sm">
+            <AlertCircle size={16} className="shrink-0" />
+            {error}
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((s) => (
-            <div
-              key={s.label}
-              className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
-            >
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${s.iconBg} ${s.iconColor}`}>
-                {s.icon}
-              </div>
-              <p className="text-xs text-slate-400 mb-1">{s.label}</p>
-              <p className="text-[26px] font-bold text-slate-800 leading-none">
-                {s.value}
-              </p>
-            </div>
+            <StatCard key={s.label} {...s} loading={loading} />
           ))}
         </div>
 
         {/* Recent Activity */}
-        <h2 className="text-[17px] font-bold text-slate-800 mb-3">
-          Aktivitas Terbaru
-        </h2>
+        <h2 className="text-[17px] font-bold text-slate-800 mb-3">Aktivitas Terbaru</h2>
 
-        {/* Tidak ada mb di sini — biarkan pb container yang handle jarak bawah */}
         <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.05)] overflow-hidden mb-4">
-          {activities.map((item, i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-3 px-4 py-4 lg:px-5 hover:bg-slate-50 transition-colors ${
-                i < activities.length - 1 ? "border-b border-slate-100" : ""
-              }`}
-            >
-              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                <FileText size={16} className="text-indigo-500" />
+          {loading ? (
+            // Skeleton
+            [1, 2, 3].map((i) => (
+              <div key={i} className={`flex items-center gap-3 px-4 py-4 lg:px-5 ${i < 3 ? "border-b border-slate-100" : ""}`}>
+                <div className="w-10 h-10 bg-slate-100 rounded-xl animate-pulse shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3.5 bg-slate-100 rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-slate-100 rounded animate-pulse w-1/2" />
+                  <div className="h-2.5 bg-slate-100 rounded animate-pulse w-1/4" />
+                </div>
+                <div className="h-7 w-20 bg-slate-100 rounded-lg animate-pulse shrink-0" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800 leading-tight truncate">
-                  {item.title}
-                </p>
-                <p className="text-[12px] text-slate-400 mt-0.5">{item.type}</p>
-                <p className="text-[11px] text-slate-300 mt-0.5">{item.time}</p>
-              </div>
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold shrink-0 ${statusStyle[item.status]}`}>
-                <StatusIcon status={item.status} />
-                <span>{item.status}</span>
-              </div>
+            ))
+          ) : recentSurats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+              <FileText size={36} className="mb-3 opacity-40" />
+              <p className="text-sm font-medium">Belum ada pengajuan surat</p>
             </div>
-          ))}
+          ) : (
+            recentSurats.map((item, i) => (
+              <div
+                key={item.id}
+                className={`flex items-center gap-3 px-4 py-4 lg:px-5 hover:bg-slate-50 transition-colors ${i < recentSurats.length - 1 ? "border-b border-slate-100" : ""
+                  }`}
+              >
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                  <FileText size={16} className="text-indigo-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800 leading-tight truncate">
+                    {getSuratTitle(item)}
+                  </p>
+                  <p className="text-[12px] text-slate-400 mt-0.5">{item.jenisSurat}</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">{relativeTime(item.tanggalPengajuan)}</p>
+                </div>
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold shrink-0 ${statusStyle[item.status]}`}>
+                  <StatusIcon status={item.status} />
+                  <span>{item.status}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
       </div>

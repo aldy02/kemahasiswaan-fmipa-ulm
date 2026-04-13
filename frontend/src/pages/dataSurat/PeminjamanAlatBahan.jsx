@@ -1,7 +1,8 @@
-// src/pages/PeminjamanAlatBahan.jsx
+// src/pages/data-surat/PeminjamanAlatBahan.jsx
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SuratPageLayout, StatusBadge } from "../../components/DataSuratComponents";
-import { peminjamanAlatBahanData } from "../../test/data";
+import { getSurats, deleteSurat } from "../../api/suratApi";
 
 const columns = [
   { key: "noSurat",          label: "No Surat" },
@@ -15,6 +16,27 @@ const columns = [
 export default function PeminjamanAlatBahan() {
   const navigate = useNavigate();
 
+  const [data,    setData]    = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState("");
+
+  const fetchData = () => {
+    setLoading(true);
+    getSurats()
+      .then((res) => {
+        setData(res.data.filter((s) => s.jenisSurat === "Peminjaman Alat/Bahan"));
+      })
+      .catch(() => setError("Gagal memuat data. Periksa koneksi Anda."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (item) => {
+    await deleteSurat(item.id);
+    fetchData();
+  };
+
   return (
     <SuratPageLayout
       breadcrumb="Data Surat / Peminjaman Alat/Bahan"
@@ -22,8 +44,10 @@ export default function PeminjamanAlatBahan() {
       pageSubtitle="Informasi data surat peminjaman alat/bahan"
       cardTitle="Peminjaman Alat/Bahan"
       searchPlaceholder="Cari berdasarkan nama kegiatan..."
-      data={peminjamanAlatBahanData}
-      filterFn={(d, s) => d.kegiatan.toLowerCase().includes(s.toLowerCase())}
+      data={data}
+      loading={loading}
+      error={error}
+      filterFn={(d, s) => d.kegiatan?.toLowerCase().includes(s.toLowerCase())}
       columns={columns}
       getMobileCardProps={(item) => ({
         title: item.kegiatan,
@@ -38,7 +62,7 @@ export default function PeminjamanAlatBahan() {
       onTambah={() => navigate(`/pengajuan-surat/peminjaman-alat-bahan`)}
       onView={(item) => navigate(`/data-surat/peminjaman-alat-bahan/${item.id}`)}
       onEdit={(item) => navigate(`/pengajuan-surat/peminjaman-alat-bahan/edit/${item.id}`)}
-      onDelete={(item) => console.log("Delete", item.id)}
+      onDelete={handleDelete}
     />
   );
 }

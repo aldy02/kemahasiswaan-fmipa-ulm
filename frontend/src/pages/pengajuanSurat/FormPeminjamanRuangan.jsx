@@ -3,154 +3,217 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FileText, Users, Calendar, Info } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import { peminjamanRuanganData } from "../../test/data";
+import { getSuratById, createSurat, updateSurat } from "../../api/suratApi";
+import { useAuth } from "../../contexts/AuthContext";
+import SuccessModal from "../../components/SuccessModal";
 import {
-  FormLabel, FormTextInput, FormSelectInput, FormDateInput, FormTimeInput,
-  FormTextarea, FormCard, FormPageHeader, FormDesktopPanel, FormMobileCards,
-  FormDesktopFooter, FormMobileFooter, PeopleGroupIcon, toFormDate, toFormTime,
+  FormField, FormGrid, FormLabel, FormFieldError,
+  FormTextInput, FormSelectInput, FormDateInput, FormTimeInput, FormTextarea,
+  FormCard, FormPageHeader, FormDesktopPanel, FormMobileCards,
+  FormDesktopFooter, FormMobileFooter, KepemimpinanSection, PeopleGroupIcon,
+  toFormDate, toFormTime,
 } from "../../components/FormComponents";
 
 const TEMPAT_OPTIONS = [
-  "Ruang Kuliah I.1.1", "Ruang Kuliah I.1.2", "Ruang Kuliah I.1.3",
-  "Ruang Kuliah I.2.1", "Ruang Kuliah I.2.3", "Ruang Kuliah I.2.4",
-  "Ruang Kuliah I.2.6", "Ruang Kuliah II.1.2",
+  "Ruang Kuliah I.1.1","Ruang Kuliah I.1.2","Ruang Kuliah I.1.3",
+  "Ruang Kuliah I.2.1","Ruang Kuliah I.2.3","Ruang Kuliah I.2.4",
+  "Ruang Kuliah I.2.6","Ruang Kuliah II.1.2",
 ];
+
+const INIT = {
+  noSurat:"", namaOrganisasi:"", namaKegiatan:"", tempatKegiatan:"",
+  namaPJ:"", kontakPJ:"", namaKetPelaksana:"", nimKetPelaksana:"",
+  namaKetOrg:"", nimKetOrg:"", tanggalPinjam:"", tanggalKembali:"",
+  jamMulai:"", jamBerakhir:"", keterangan:"",
+};
+const INIT_ERR = {
+  noSurat:"", namaOrganisasi:"", namaKegiatan:"", tempatKegiatan:"",
+  namaPJ:"", kontakPJ:"", namaKetPelaksana:"", nimKetPelaksana:"",
+  namaKetOrg:"", nimKetOrg:"", tanggalPinjam:"", tanggalKembali:"",
+  jamMulai:"", jamBerakhir:"",
+};
 
 export default function FormPeminjamanRuangan() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isEdit = Boolean(id);
+  const { id }   = useParams();
+  const { user } = useAuth();
+  const isEdit   = Boolean(id);
 
-  const [noSurat, setNoSurat] = useState("");
-  const [namaOrganisasi, setNamaOrganisasi] = useState("");
-  const [namaKegiatan, setNamaKegiatan] = useState("");
-  const [tempatKegiatan, setTempatKegiatan] = useState("");
-  const [namaPJ, setNamaPJ] = useState("");
-  const [kontakPJ, setKontakPJ] = useState("");
-  const [namaKetPelaksana, setNamaKetPelaksana] = useState("");
-  const [nimKetPelaksana, setNimKetPelaksana] = useState("");
-  const [namaKetOrg, setNamaKetOrg] = useState("");
-  const [nimKetOrg, setNimKetOrg] = useState("");
-  const [tanggalPinjam, setTanggalPinjam] = useState("");
-  const [tanggalKembali, setTanggalKembali] = useState("");
-  const [jamMulai, setJamMulai] = useState("");
-  const [jamBerakhir, setJamBerakhir] = useState("");
-  const [keterangan, setKeterangan] = useState("");
+  const [f, setF]               = useState(INIT);
+  const [errors, setErrors]     = useState(INIT_ERR);
+  const [loading, setLoading]   = useState(false);
+  const [fetching, setFetching] = useState(isEdit);
+  const [modal, setModal]       = useState(false);
+  const [original, setOriginal] = useState(null);
+
+  const set = (field) => (val) => {
+    setF((p) => ({ ...p, [field]: val }));
+    setErrors((p) => ({ ...p, [field]: "" }));
+  };
 
   useEffect(() => {
     if (!isEdit) return;
-    const item = peminjamanRuanganData.find((d) => d.id === Number(id));
-    if (!item) return;
-    setNoSurat(item.noSurat === "-" ? "" : item.noSurat || "");
-    setNamaOrganisasi(item.organisasi || "");
-    setNamaKegiatan(item.namaKegiatan || "");
-    setTempatKegiatan(item.tempatKegiatan || "");
-    setNamaPJ(item.penanggungJawab?.nama || "");
-    setKontakPJ(item.penanggungJawab?.telp || "");
-    setNamaKetPelaksana(item.ketuaPelaksana?.nama || "");
-    setNimKetPelaksana(item.ketuaPelaksana?.nim || "");
-    setNamaKetOrg(item.ketuaOrganisasi?.nama || "");
-    setNimKetOrg(item.ketuaOrganisasi?.nim || "");
-    setTanggalPinjam(toFormDate(item.tanggalPinjam));
-    setTanggalKembali(toFormDate(item.tanggalKembali));
-    setJamMulai(toFormTime(item.jamMulai));
-    setJamBerakhir(toFormTime(item.jamBerakhir));
-    setKeterangan(item.keterangan || "");
+    setFetching(true);
+    getSuratById(id).then((res) => {
+      const d = res.data;
+      if (!d) return;
+      setOriginal(d);
+      setF({
+        noSurat:          d.noSurat === "-" ? "" : d.noSurat || "",
+        namaOrganisasi:   d.organisasi || "",
+        namaKegiatan:     d.namaKegiatan || "",
+        tempatKegiatan:   d.tempatKegiatan || "",
+        namaPJ:           d.penanggungJawab?.nama || "",
+        kontakPJ:         d.penanggungJawab?.telp || "",
+        namaKetPelaksana: d.ketuaPelaksana?.nama || "",
+        nimKetPelaksana:  d.ketuaPelaksana?.nim || "",
+        namaKetOrg:       d.ketuaOrganisasi?.nama || "",
+        nimKetOrg:        d.ketuaOrganisasi?.nim || "",
+        tanggalPinjam:    toFormDate(d.tanggalPinjam),
+        tanggalKembali:   toFormDate(d.tanggalKembali),
+        jamMulai:         toFormTime(d.jamMulai),
+        jamBerakhir:      toFormTime(d.jamBerakhir),
+        keterangan:       d.keterangan || "",
+      });
+    }).finally(() => setFetching(false));
   }, [id, isEdit]);
 
-  const title = isEdit ? "Ubah Surat Peminjaman Ruangan" : "Pengajuan Surat Peminjaman Ruangan";
+  const validate = () => {
+    const e = { ...INIT_ERR };
+    let ok = true;
+    const req = (key, label) => { if (!f[key]?.trim()) { e[key] = `${label} tidak boleh kosong.`; ok = false; } };
+
+    req("noSurat",          "No surat");
+    req("namaOrganisasi",   "Nama organisasi");
+    req("namaKegiatan",     "Nama kegiatan");
+    req("namaPJ",           "Nama penanggung jawab");
+    req("kontakPJ",         "Kontak penanggung jawab");
+    req("namaKetPelaksana", "Nama ketua pelaksana");
+    req("nimKetPelaksana",  "NIM ketua pelaksana");
+    req("namaKetOrg",       "Nama ketua organisasi");
+    req("nimKetOrg",        "NIM ketua organisasi");
+    if (!f.tempatKegiatan) { e.tempatKegiatan = "Tempat kegiatan tidak boleh kosong."; ok = false; }
+    if (!f.tanggalPinjam)  { e.tanggalPinjam  = "Tanggal pinjam tidak boleh kosong."; ok = false; }
+    if (!f.tanggalKembali) { e.tanggalKembali = "Tanggal kembali tidak boleh kosong."; ok = false; }
+    if (!f.jamMulai)       { e.jamMulai       = "Jam mulai tidak boleh kosong.";       ok = false; }
+    if (!f.jamBerakhir)    { e.jamBerakhir    = "Jam berakhir tidak boleh kosong.";    ok = false; }
+    setErrors(e);
+    return ok;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      const payload = {
+        noSurat: f.noSurat, organisasi: f.namaOrganisasi,
+        namaKegiatan: f.namaKegiatan, tempatKegiatan: f.tempatKegiatan,
+        penanggungJawab: { nama: f.namaPJ, telp: f.kontakPJ },
+        ketuaPelaksana:  { nama: f.namaKetPelaksana, nim: f.nimKetPelaksana },
+        ketuaOrganisasi: { nama: f.namaKetOrg, nim: f.nimKetOrg },
+        tanggalPinjam: f.tanggalPinjam, tanggalKembali: f.tanggalKembali,
+        jamMulai: f.jamMulai, jamBerakhir: f.jamBerakhir,
+        keterangan: f.keterangan, updatedAt: new Date().toISOString(),
+      };
+      if (isEdit) {
+        await updateSurat(id, { ...original, ...payload });
+      } else {
+        await createSurat({
+          ...payload, jenisSurat: "Peminjaman Ruangan", userId: user?.id,
+          status: "Menunggu",
+          tanggalPengajuan: new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g,"-"),
+          createdAt: new Date().toISOString(),
+        });
+      }
+      setModal(true);
+    } catch { alert("Terjadi kesalahan saat menyimpan data."); }
+    finally   { setLoading(false); }
+  };
+
+  const kepemimpinanGroups = [
+    { label: "Penanggung Jawab", fields: [
+      { label:"Nama Penanggung Jawab",  placeholder:"Masukkan nama penanggung jawab", value:f.namaPJ,           onChange:set("namaPJ"),           error:errors.namaPJ },
+      { label:"Kontak Penanggung Jawab",placeholder:"Masukkan nomor telepon",         value:f.kontakPJ,         onChange:set("kontakPJ"),         error:errors.kontakPJ, type:"tel" },
+    ]},
+    { label: "Ketua Pelaksana", fields: [
+      { label:"Nama Ketua Pelaksana", placeholder:"Masukkan nama ketua pelaksana", value:f.namaKetPelaksana, onChange:set("namaKetPelaksana"), error:errors.namaKetPelaksana },
+      { label:"NIM Ketua Pelaksana",  placeholder:"Masukkan NIM ketua pelaksana",  value:f.nimKetPelaksana,  onChange:set("nimKetPelaksana"),  error:errors.nimKetPelaksana },
+    ]},
+    { label: "Ketua Organisasi", fields: [
+      { label:"Nama Ketua Organisasi", placeholder:"Masukkan nama ketua organisasi", value:f.namaKetOrg, onChange:set("namaKetOrg"), error:errors.namaKetOrg },
+      { label:"NIM Ketua Organisasi",  placeholder:"Masukkan NIM ketua organisasi",  value:f.nimKetOrg,  onChange:set("nimKetOrg"),  error:errors.nimKetOrg },
+    ]},
+  ];
+
+  const title    = isEdit ? "Ubah Surat Peminjaman Ruangan" : "Pengajuan Surat Peminjaman Ruangan";
   const subtitle = "Silakan lengkapi formulir di bawah ini untuk mengajukan peminjaman ruangan";
 
-  // ── Sections ─────────────────────────────────────────────────────────────
-  const s1 = (
-    <FormCard icon={<FileText size={20} />} title="Informasi Surat" subtitle="Masukkan informasi terkait nomor surat pengajuan">
-      <FormLabel>No Surat</FormLabel>
-      <FormTextInput placeholder="Masukkan no surat" value={noSurat} onChange={setNoSurat} />
-    </FormCard>
-  );
+  if (fetching) return <MainLayout><div className="p-8 text-sm text-slate-400">Memuat data...</div></MainLayout>;
 
-  const s2 = (
-    <FormCard icon={<PeopleGroupIcon size={20} />} title="Detail Organisasi & Kegiatan" subtitle="Informasi lengkap mengenai organisasi dan kegiatan yang akan dilaksanakan">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <div><FormLabel required>Nama Organisasi</FormLabel><FormTextInput placeholder="Masukkan nama organisasi" value={namaOrganisasi} onChange={setNamaOrganisasi} /></div>
-        <div><FormLabel required>Nama Kegiatan</FormLabel><FormTextInput placeholder="Masukkan nama kegiatan" value={namaKegiatan} onChange={setNamaKegiatan} /></div>
-      </div>
-      <FormLabel required>Tempat Kegiatan</FormLabel>
-      <FormSelectInput placeholder="Pilih tempat kegiatan" value={tempatKegiatan} onChange={setTempatKegiatan} options={TEMPAT_OPTIONS} />
-    </FormCard>
-  );
+  const sections = [
+    <FormCard key="surat" icon={<FileText size={20} />} title="Informasi Surat" subtitle="Masukkan informasi terkait nomor surat pengajuan">
+      <FormField label="No Surat" required error={errors.noSurat}>
+        <FormTextInput placeholder="Masukkan no surat" value={f.noSurat} onChange={set("noSurat")} error={errors.noSurat} />
+      </FormField>
+    </FormCard>,
 
-  const s3 = (
-    <FormCard icon={<Users size={20} />} title="Informasi Kepemimpinan" subtitle="Data penanggung jawab, ketua organisasi, dan ketua pelaksana kegiatan">
-      {/* Desktop: 3 columns */}
-      <div className="hidden lg:grid lg:grid-cols-3 gap-6">
-        {[
-          { label: "Penanggung Jawab", fields: [{ l: "Nama Penanggung Jawab", p: "Masukkan nama penanggung jawab", v: namaPJ, s: setNamaPJ }, { l: "Kontak Penanggung Jawab", p: "Masukkan nomor telepon", v: kontakPJ, s: setKontakPJ, t: "tel" }] },
-          { label: "Ketua Pelaksana", fields: [{ l: "Nama Ketua Pelaksana", p: "Masukkan nama ketua pelaksana", v: namaKetPelaksana, s: setNamaKetPelaksana }, { l: "NIM Ketua Pelaksana", p: "Masukkan NIM ketua pelaksana", v: nimKetPelaksana, s: setNimKetPelaksana }] },
-          { label: "Ketua Organisasi", fields: [{ l: "Nama Ketua Organisasi", p: "Masukkan nama ketua organisasi", v: namaKetOrg, s: setNamaKetOrg }, { l: "NIM Ketua Organisasi", p: "Masukkan NIM Ketua Organisasi", v: nimKetOrg, s: setNimKetOrg }] },
-        ].map(({ label, fields }) => (
-          <div key={label}>
-            <p className="text-sm font-semibold text-primary-1 mb-3 pb-2 border-b border-slate-200">{label}</p>
-            <div className="flex flex-col gap-3">
-              {fields.map(({ l, p, v, s, t }) => (
-                <div key={l}><FormLabel required>{l}</FormLabel><FormTextInput placeholder={p} value={v} onChange={s} type={t} /></div>
-              ))}
-            </div>
-          </div>
-        ))}
+    <FormCard key="org" icon={<PeopleGroupIcon size={20} />} title="Detail Organisasi & Kegiatan" subtitle="Informasi mengenai organisasi dan kegiatan yang akan dilaksanakan">
+      <FormGrid cols={2}>
+        <FormField label="Nama Organisasi" required error={errors.namaOrganisasi}>
+          <FormTextInput placeholder="Masukkan nama organisasi" value={f.namaOrganisasi} onChange={set("namaOrganisasi")} error={errors.namaOrganisasi} />
+        </FormField>
+        <FormField label="Nama Kegiatan" required error={errors.namaKegiatan}>
+          <FormTextInput placeholder="Masukkan nama kegiatan" value={f.namaKegiatan} onChange={set("namaKegiatan")} error={errors.namaKegiatan} />
+        </FormField>
+      </FormGrid>
+      <div className="mt-4">
+        <FormField label="Tempat Kegiatan" required error={errors.tempatKegiatan}>
+          <FormSelectInput placeholder="Pilih tempat kegiatan" value={f.tempatKegiatan} onChange={set("tempatKegiatan")} options={TEMPAT_OPTIONS} error={errors.tempatKegiatan} />
+        </FormField>
       </div>
-      {/* Mobile: stacked with separators */}
-      <div className="lg:hidden flex flex-col gap-0">
-        {[
-          { label: "Penanggung Jawab", fields: [{ l: "Nama Penanggung Jawab", p: "Masukkan nama penanggung jawab", v: namaPJ, s: setNamaPJ }, { l: "Kontak Penanggung Jawab", p: "Masukkan nomor telepon", v: kontakPJ, s: setKontakPJ, t: "tel" }] },
-          { label: "Ketua Pelaksana", fields: [{ l: "Nama Ketua Pelaksana", p: "Masukkan nama ketua pelaksana", v: namaKetPelaksana, s: setNamaKetPelaksana }, { l: "NIM Ketua Pelaksana", p: "Masukkan NIM ketua pelaksana", v: nimKetPelaksana, s: setNimKetPelaksana }] },
-          { label: "Ketua Organisasi", fields: [{ l: "Nama Ketua Organisasi", p: "Masukkan nama ketua organisasi", v: namaKetOrg, s: setNamaKetOrg }, { l: "NIM Ketua Organisasi", p: "Masukkan NIM Ketua Organisasi", v: nimKetOrg, s: setNimKetOrg }] },
-        ].map(({ label, fields }, gi, arr) => (
-          <div key={label}>
-            <p className="text-[13px] font-semibold text-primary-1 mb-2">{label}</p>
-            <hr className="border-slate-200 mb-3" />
-            <div className={`flex flex-col gap-3 ${gi < arr.length - 1 ? "mb-5" : ""}`}>
-              {fields.map(({ l, p, v, s, t }) => (
-                <div key={l}><FormLabel required>{l}</FormLabel><FormTextInput placeholder={p} value={v} onChange={s} type={t} /></div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </FormCard>
-  );
+    </FormCard>,
 
-  const s4 = (
-    <FormCard icon={<Calendar size={20} />} title="Jadwal Peminjaman" subtitle="Tentukan tanggal dan waktu peminjaman ruangan">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div><FormLabel required>Tanggal Pinjam</FormLabel><FormDateInput value={tanggalPinjam} onChange={setTanggalPinjam} /></div>
-        <div><FormLabel required>Tanggal Kembali</FormLabel><FormDateInput value={tanggalKembali} onChange={setTanggalKembali} /></div>
-        <div><FormLabel required>Jam Mulai</FormLabel><FormTimeInput value={jamMulai} onChange={setJamMulai} /></div>
-        <div><FormLabel required>Jam Berakhir</FormLabel><FormTimeInput value={jamBerakhir} onChange={setJamBerakhir} /></div>
-      </div>
-    </FormCard>
-  );
+    <FormCard key="pimpin" icon={<Users size={20} />} title="Informasi Kepemimpinan" subtitle="Data penanggung jawab, ketua organisasi, dan ketua pelaksana kegiatan">
+      <KepemimpinanSection groups={kepemimpinanGroups} />
+    </FormCard>,
 
-  const s5 = (
-    <FormCard icon={<Info size={20} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan terkait peminjaman ruangan">
+    <FormCard key="jadwal" icon={<Calendar size={20} />} title="Jadwal Peminjaman" subtitle="Tentukan tanggal dan waktu peminjaman ruangan">
+      <FormGrid cols={2}>
+        <FormField label="Tanggal Pinjam"  required error={errors.tanggalPinjam}>
+          <FormDateInput value={f.tanggalPinjam}  onChange={set("tanggalPinjam")}  error={errors.tanggalPinjam} />
+        </FormField>
+        <FormField label="Tanggal Kembali" required error={errors.tanggalKembali}>
+          <FormDateInput value={f.tanggalKembali} onChange={set("tanggalKembali")} error={errors.tanggalKembali} />
+        </FormField>
+        <FormField label="Jam Mulai"    required error={errors.jamMulai}>
+          <FormTimeInput value={f.jamMulai}    onChange={set("jamMulai")}    error={errors.jamMulai} />
+        </FormField>
+        <FormField label="Jam Berakhir" required error={errors.jamBerakhir}>
+          <FormTimeInput value={f.jamBerakhir} onChange={set("jamBerakhir")} error={errors.jamBerakhir} />
+        </FormField>
+      </FormGrid>
+    </FormCard>,
+
+    <FormCard key="info" icon={<Info size={20} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan terkait peminjaman ruangan">
       <FormLabel>Keterangan</FormLabel>
-      <FormTextarea placeholder="Masukkan keterangan tambahan jika diperlukan" value={keterangan} onChange={setKeterangan} />
-    </FormCard>
-  );
-
-  const sections = [s1, s2, s3, s4, s5];
+      <FormTextarea placeholder="Masukkan keterangan tambahan jika diperlukan" value={f.keterangan} onChange={set("keterangan")} />
+    </FormCard>,
+  ];
 
   return (
     <MainLayout>
       <FormPageHeader breadcrumb="Pengajuan Surat / Peminjaman Ruangan" title={title} subtitle={subtitle} />
       <div className="hidden lg:block h-6" />
       <div className="mx-0 lg:mx-8 pb-10">
-        <FormDesktopPanel title="Form Peminjaman Ruangan" subtitle={subtitle} footer={<FormDesktopFooter />}>
+        <FormDesktopPanel title="Form Peminjaman Ruangan" subtitle={subtitle} footer={<FormDesktopFooter onSubmit={handleSubmit} loading={loading} />}>
           {sections}
         </FormDesktopPanel>
         <FormMobileCards>{sections}</FormMobileCards>
-        <FormMobileFooter />
+        <FormMobileFooter onSubmit={handleSubmit} loading={loading} />
       </div>
+      <SuccessModal isOpen={modal} message={isEdit ? "Perubahan Berhasil Disimpan!" : "Surat Berhasil Dikirim!"}
+        onOk={() => navigate("/data-surat/peminjaman-ruangan")}
+        onClose={() => { setModal(false); setF(INIT); setErrors(INIT_ERR); }} />
     </MainLayout>
   );
 }

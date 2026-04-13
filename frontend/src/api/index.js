@@ -19,8 +19,6 @@ export {
   createSurat,
   updateSurat,
   deleteSurat,
-  getRecentSurats,
-  getSuratStats,
   // Peminjaman Ruangan
   getPeminjamanRuangan,
   createPeminjamanRuangan,

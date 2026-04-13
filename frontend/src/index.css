@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 @theme {
+  /* Primary */
   --color-primary-1: #2B3674;
   --color-primary-2: #3A70FA;
   --color-primary-3: #5882ED;
   --color-primary-4: #93AEF3;
   
+  /* Neutral */
   --color-neutral-1: #707EAE;
   --color-neutral-2: #A3AED0;
   --color-neutral-3: #E0E5F2;
@@ -19,7 +21,9 @@
   
   /* Succes */
   --color-succes-1: #05CD99;
-
+  --color-succes-2: #027959;
+  --color-succes-3: #01533C;
+  --color-succes-4: #039855;
   /* Warning */
   --color-warning-1: #FFCE20;
   

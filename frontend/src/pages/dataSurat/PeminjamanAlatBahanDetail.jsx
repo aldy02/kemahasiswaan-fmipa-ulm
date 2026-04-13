@@ -1,14 +1,30 @@
-// src/pages/PeminjamanAlatBahanDetail.jsx
+// src/pages/data-surat/PeminjamanAlatBahanDetail.jsx
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FileText, Users, Building2, CalendarDays, MessageSquare, Package } from "lucide-react";
 import { DetailPageLayout, SectionCard, Field, FieldWithSub, NotFound } from "../../components/DataSuratDetailComponents";
-import { peminjamanAlatBahanData } from "../../test/data";
+import { getSuratById } from "../../api/suratApi";
 
 export default function PeminjamanAlatBahanDetail() {
   const { id } = useParams();
-  const item = peminjamanAlatBahanData.find((d) => d.id === Number(id));
 
-  if (!item) return <NotFound />;
+  const [item, setItem]         = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getSuratById(id)
+      .then((res) => {
+        if (!res.data) { setNotFound(true); return; }
+        setItem(res.data);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return null;
+  if (notFound || !item) return <NotFound />;
 
   const cardSurat = (
     <SectionCard key="surat" icon={<FileText size={20} />} title="Informasi Surat">
@@ -27,8 +43,8 @@ export default function PeminjamanAlatBahanDetail() {
 
   const cardAlat = (
     <SectionCard key="alat" icon={<Package size={20} />} title="Detail Alat/Bahan">
-      {item.daftarAlat?.map((alat) => (
-        <Field key={alat.item} label={alat.item} value={alat.nama} />
+      {item.daftarAlat?.map((alat, i) => (
+        <Field key={i} label={alat.item || `Item ${i + 1}`} value={alat.nama} />
       ))}
     </SectionCard>
   );

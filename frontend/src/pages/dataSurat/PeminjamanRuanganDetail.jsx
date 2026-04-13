@@ -1,15 +1,30 @@
-// src/pages/PeminjamanRuanganDetail.jsx
-import { useParams, useNavigate } from "react-router-dom";
+// src/pages/data-surat/PeminjamanRuanganDetail.jsx
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { FileText, Users, Building2, CalendarDays, MessageSquare } from "lucide-react";
 import { DetailPageLayout, SectionCard, Field, FieldWithSub, NotFound } from "../../components/DataSuratDetailComponents";
-import { peminjamanRuanganData } from "../../test/data";
+import { getSuratById } from "../../api/suratApi";
 
 export default function PeminjamanRuanganDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const item = peminjamanRuanganData.find((d) => d.id === Number(id));
 
-  if (!item) return <NotFound />;
+  const [item, setItem]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getSuratById(id)
+      .then((res) => {
+        if (!res.data) { setNotFound(true); return; }
+        setItem(res.data);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return null;
+  if (notFound || !item) return <NotFound />;
 
   const cardSurat = (
     <SectionCard key="surat" icon={<FileText size={20} />} title="Informasi Surat">
@@ -37,7 +52,7 @@ export default function PeminjamanRuanganDetail() {
     <SectionCard key="pimpin" icon={<Users size={20} />} title="Informasi Kepemimpinan">
       <FieldWithSub label="Penanggung Jawab" main={item.penanggungJawab?.nama} sub={`Telp: ${item.penanggungJawab?.telp}`} />
       <FieldWithSub label="Ketua Pelaksana" main={item.ketuaPelaksana?.nama} sub={`NIM: ${item.ketuaPelaksana?.nim}`} />
-      <FieldWithSub label="Ketua Organisasi" main={item.ketuaOrganisasi?.nama} sub={`Telp: ${item.ketuaOrganisasi?.nim}`} />
+      <FieldWithSub label="Ketua Organisasi" main={item.ketuaOrganisasi?.nama} sub={`NIM: ${item.ketuaOrganisasi?.nim}`} />
     </SectionCard>
   );
 
