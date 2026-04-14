@@ -1,30 +1,39 @@
-// src/pages/data-surat/IzinTidakMengikutiKuliah.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SuratPageLayout, StatusBadge } from "../../components/DataSuratComponents";
 import { getSurats, deleteSurat } from "../../api/suratApi";
 
 const columns = [
-  { key: "noSurat",    label: "No Surat" },
-  { key: "nama",       label: "Nama",  render: (item) => item.mahasiswas?.[0]?.nama  ?? "-" },
-  { key: "nim",        label: "NIM",   render: (item) => item.mahasiswas?.[0]?.nim   ?? "-" },
-  { key: "prodi",      label: "Prodi", render: (item) => item.mahasiswas?.[0]?.prodi ?? "-" },
+  { key: "noSurat", label: "No Surat" },
+  { key: "nama", label: "Nama", render: (item) => item.mahasiswas?.[0]?.nama ?? "-" },
+  { key: "nim", label: "NIM", render: (item) => item.mahasiswas?.[0]?.nim ?? "-" },
+  { key: "prodi", label: "Prodi", render: (item) => item.mahasiswas?.[0]?.prodi ?? "-" },
   { key: "mataKuliah", label: "Mata Kuliah" },
   { key: "status", label: "Status", render: (item) => <StatusBadge status={item.status} /> },
 ];
 
+const sortByNewest = (arr) => {
+  const parseDate = (str) => {
+    if (!str) return 0;
+    const [d, m, y] = str.split("-");
+    return new Date(`${y}-${m}-${d}`).getTime();
+  };
+  return [...arr].sort((a, b) => parseDate(b.tanggalPengajuan) - parseDate(a.tanggalPengajuan));
+};
+
 export default function IzinTidakMengikutiKuliah() {
   const navigate = useNavigate();
 
-  const [data,    setData]    = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState("");
+  const [error, setError] = useState("");
 
   const fetchData = () => {
     setLoading(true);
     getSurats()
       .then((res) => {
-        setData(res.data.filter((s) => s.jenisSurat === "Izin Tidak Mengikuti Kuliah"));
+        const filtered = res.data.filter((s) => s.jenisSurat === "Izin Tidak Mengikuti Kuliah");
+        setData(sortByNewest(filtered));
       })
       .catch(() => setError("Gagal memuat data. Periksa koneksi Anda."))
       .finally(() => setLoading(false));

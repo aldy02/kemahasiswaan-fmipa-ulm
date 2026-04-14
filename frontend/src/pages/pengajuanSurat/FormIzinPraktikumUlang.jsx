@@ -1,61 +1,85 @@
-// src/pages/pengajuanSurat/FormIzinPraktikumUlang.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Users, CalendarDays, Info, MessageSquare, Plus, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import { izinPraktikumUlangData } from "../../test/data";
+import { getSuratById, createSurat, updateSurat } from "../../api/suratApi";
+import { useAuth } from "../../contexts/AuthContext";
+import SuccessModal from "../../components/SuccessModal";
 import {
-  FormLabel, FormTextInput, FormSelectInput, FormDateInput, FormTextarea,
+  FormField, FormGrid, FormLabel,
+  FormTextInput, FormSelectInput, FormDateInput, FormTextarea,
   FormCard, FormPageHeader, FormDesktopPanel, FormMobileCards,
-  FormDesktopFooter, FormMobileFooter, toFormDate,
+  FormDesktopFooter, FormMobileFooter, toFormDate, toApiDate,
 } from "../../components/FormComponents";
 
-const PRODI_OPTIONS = [
-  "S1 Matematika", "S1 Statistika", "S1 Fisika", "S1 Kimia",
-  "S1 Biologi", "S1 Ilmu Komputer", "S1 Farmasi",
-];
+const PRODI_OPTIONS = ["S1 Matematika", "S1 Statistika", "S1 Fisika", "S1 Kimia", "S1 Biologi", "S1 Ilmu Komputer", "S1 Farmasi"];
+const EMPTY_MHS = [{ nim: "", nama: "", mataKuliah: "", prodi: "" }];
+const INIT_ERR = { tanggalMulai: "", tanggalAkhir: "", sebab: "", tempat: "" };
 
-function MahasiswaSection({ items, setItems }) {
-  const addItem = () => setItems([...items, { nim: "", nama: "", mataKuliah: "", prodi: "" }]);
-  const removeItem = (i) => setItems(items.filter((_, idx) => idx !== i));
-  const update = (i, f, v) => setItems(items.map((it, idx) => idx === i ? { ...it, [f]: v } : it));
+function MahasiswaSection({ items, setItems, mhsErrors, setMhsErrors }) {
+  const add = () => { setItems([...items, { nim: "", nama: "", mataKuliah: "", prodi: "" }]); setMhsErrors([...mhsErrors, { nim: "", nama: "", mataKuliah: "", prodi: "" }]); };
+  const remove = (i) => { setItems(items.filter((_, j) => j !== i)); setMhsErrors(mhsErrors.filter((_, j) => j !== i)); };
+  const upd = (i, field, val) => {
+    setItems(items.map((it, j) => j === i ? { ...it, [field]: val } : it));
+    setMhsErrors(mhsErrors.map((e, j) => j === i ? { ...e, [field]: "" } : e));
+  };
+  const textFields = [
+    { l: "NIM Mahasiswa", p: "Masukkan NIM", fk: "nim" },
+    { l: "Nama Mahasiswa", p: "Masukkan nama", fk: "nama" },
+    { l: "Mata Kuliah", p: "Masukkan mata kuliah", fk: "mataKuliah" },
+  ];
 
   return (
     <div className="flex flex-col gap-5">
       {items.map((it, i) => (
         <div key={i}>
+          {/* Desktop */}
           <p className="hidden lg:block text-sm font-semibold text-primary-1 mb-4">Mahasiswa {i + 1}</p>
-          <div className="lg:hidden flex items-center justify-between mb-4">
-            <p className="text-[13px] font-semibold text-primary-1">Mahasiswa {i + 1}</p>
-            {items.length > 1 && (
-              <button onClick={() => removeItem(i)} className="w-6 h-6 flex items-center justify-center rounded-full bg-error-2 text-white hover:bg-red-500 transition-colors shrink-0">
-                <X size={13} strokeWidth={2.5} />
-              </button>
-            )}
-          </div>
-          <div className="hidden lg:flex items-end gap-3">
-            <div className="flex-1"><FormLabel required>NIM Mahasiswa</FormLabel><FormTextInput placeholder="Masukkan NIM mahasiswa" value={it.nim} onChange={(v) => update(i, "nim", v)} /></div>
-            <div className="flex-1"><FormLabel required>Nama Mahasiswa</FormLabel><FormTextInput placeholder="Masukkan nama mahasiswa" value={it.nama} onChange={(v) => update(i, "nama", v)} /></div>
-            <div className="flex-1"><FormLabel required>Mata Kuliah</FormLabel><FormTextInput placeholder="Masukkan mata kuliah" value={it.mataKuliah} onChange={(v) => update(i, "mataKuliah", v)} /></div>
-            <div className="flex-1"><FormLabel required>Program Studi Mahasiswa</FormLabel><FormSelectInput placeholder="Pilih program studi mahasiswa" value={it.prodi} onChange={(v) => update(i, "prodi", v)} options={PRODI_OPTIONS} /></div>
+          <div className="hidden lg:flex items-start gap-3">
+            {textFields.map(({ l, p, fk }) => (
+              <div key={fk} className="flex-1">
+                <FormField label={l} required error={mhsErrors[i]?.[fk]}>
+                  <FormTextInput placeholder={p} value={it[fk]} onChange={(v) => upd(i, fk, v)} error={mhsErrors[i]?.[fk]} />
+                </FormField>
+              </div>
+            ))}
+            <div className="flex-1">
+              <FormField label="Program Studi" required error={mhsErrors[i]?.prodi}>
+                <FormSelectInput placeholder="Pilih prodi" value={it.prodi} onChange={(v) => upd(i, "prodi", v)} options={PRODI_OPTIONS} error={mhsErrors[i]?.prodi} />
+              </FormField>
+            </div>
             {items.length > 1 ? (
-              <button onClick={() => removeItem(i)} className="w-10.5 h-10.5 flex items-center justify-center rounded-xl border border-slate-200 bg-gray-50 text-slate-400 hover:border-error-1 hover:bg-error-1/5 hover:text-error-1 transition-colors shrink-0">
+              <button onClick={() => remove(i)} className="mt-7 w-10.5 h-10.5 flex items-center justify-center rounded-xl border border-slate-200 bg-gray-50 text-slate-400 hover:border-error-1 hover:bg-red-50 hover:text-error-1 transition-colors shrink-0">
                 <X size={16} strokeWidth={2} />
               </button>
             ) : <div className="w-10.5 shrink-0" />}
           </div>
-          {i < items.length - 1 && <hr className="hidden lg:block border-slate-200 mt-7" />}
+          {i < items.length - 1 && <hr className="hidden lg:block border-slate-200 mt-5" />}
+
+          {/* Mobile */}
+          <div className="lg:hidden flex items-center justify-between mb-4">
+            <p className="text-[13px] font-semibold text-primary-1">Mahasiswa {i + 1}</p>
+            {items.length > 1 && (
+              <button onClick={() => remove(i)} className="w-6 h-6 flex items-center justify-center rounded-full bg-error-2 text-white hover:bg-red-500 transition-colors shrink-0">
+                <X size={13} strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
           <div className="lg:hidden flex flex-col gap-3">
-            <div><FormLabel required>NIM Mahasiswa</FormLabel><FormTextInput placeholder="Masukkan NIM mahasiswa" value={it.nim} onChange={(v) => update(i, "nim", v)} /></div>
-            <div><FormLabel required>Nama Mahasiswa</FormLabel><FormTextInput placeholder="Masukkan nama mahasiswa" value={it.nama} onChange={(v) => update(i, "nama", v)} /></div>
-            <div><FormLabel required>Mata Kuliah</FormLabel><FormTextInput placeholder="Masukkan mata kuliah" value={it.mataKuliah} onChange={(v) => update(i, "mataKuliah", v)} /></div>
-            <div><FormLabel required>Program Studi Mahasiswa</FormLabel><FormSelectInput placeholder="Pilih program studi mahasiswa" value={it.prodi} onChange={(v) => update(i, "prodi", v)} options={PRODI_OPTIONS} /></div>
+            {textFields.map(({ l, p, fk }) => (
+              <FormField key={fk} label={l} required error={mhsErrors[i]?.[fk]}>
+                <FormTextInput placeholder={p} value={it[fk]} onChange={(v) => upd(i, fk, v)} error={mhsErrors[i]?.[fk]} />
+              </FormField>
+            ))}
+            <FormField label="Program Studi" required error={mhsErrors[i]?.prodi}>
+              <FormSelectInput placeholder="Pilih prodi" value={it.prodi} onChange={(v) => upd(i, "prodi", v)} options={PRODI_OPTIONS} error={mhsErrors[i]?.prodi} />
+            </FormField>
           </div>
           {i < items.length - 1 && <hr className="lg:hidden border-slate-200 mt-5" />}
         </div>
       ))}
       <div>
-        <button onClick={addItem} className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-2 hover:bg-blue-600 text-white text-[13px] font-semibold rounded-xl transition-colors">
+        <button onClick={add} className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-2 hover:bg-blue-600 text-white text-[13px] font-semibold rounded-xl transition-colors">
           <Plus size={14} /> Tambah
         </button>
       </div>
@@ -66,78 +90,140 @@ function MahasiswaSection({ items, setItems }) {
 export default function FormIzinPraktikumUlang() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAuth();
   const isEdit = Boolean(id);
 
-  const [mahasiswaItems, setMahasiswaItems] = useState([{ nim: "", nama: "", mataKuliah: "", prodi: "" }]);
-  const [tanggalMulai, setTanggalMulai] = useState("");
-  const [tanggalAkhir, setTanggalAkhir] = useState("");
-  const [sebab, setSebab] = useState("");
-  const [tempat, setTempat] = useState("");
-  const [keterangan, setKeterangan] = useState("");
+  const [mhsItems, setMhsItems] = useState(EMPTY_MHS);
+  const [mhsErrors, setMhsErrors] = useState([{ nim: "", nama: "", mataKuliah: "", prodi: "" }]);
+  const [f, setF] = useState({ tanggalMulai: "", tanggalAkhir: "", sebab: "", tempat: "", keterangan: "" });
+  const [errors, setErrors] = useState(INIT_ERR);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEdit);
+  const [modal, setModal] = useState(false);
+  const [original, setOriginal] = useState(null);
+
+  const set = (field) => (val) => { setF((p) => ({ ...p, [field]: val })); setErrors((p) => ({ ...p, [field]: "" })); };
 
   useEffect(() => {
     if (!isEdit) return;
-    const item = izinPraktikumUlangData.find((d) => d.id === Number(id));
-    if (!item) return;
-    setMahasiswaItems(
-      item.mahasiswas?.length
-        ? item.mahasiswas.map((m) => ({ nim: m.nim || "", nama: m.nama || "", mataKuliah: m.mataKuliah || "", prodi: m.prodi || "" }))
-        : [{ nim: "", nama: "", mataKuliah: "", prodi: "" }]
-    );
-    setTanggalMulai(toFormDate(item.tanggalMulai));
-    setTanggalAkhir(toFormDate(item.tanggalAkhir));
-    setSebab(item.sebab || "");
-    setTempat(item.tempat || "");
-    setKeterangan(item.keterangan|| "");
+    setFetching(true);
+    getSuratById(id).then((res) => {
+      const d = res.data; if (!d) return;
+      setOriginal(d);
+      const mhs = d.mahasiswas?.length
+        ? d.mahasiswas.map((m) => ({ nim: m.nim || "", nama: m.nama || "", mataKuliah: m.mataKuliah || "", prodi: m.prodi || "" }))
+        : EMPTY_MHS;
+      setMhsItems(mhs);
+      setMhsErrors(mhs.map(() => ({ nim: "", nama: "", mataKuliah: "", prodi: "" })));
+      setF({
+        tanggalMulai: toFormDate(d.tanggalMulai), tanggalAkhir: toFormDate(d.tanggalAkhir),
+        sebab: d.sebab || "", tempat: d.tempat || "", keterangan: d.keterangan || "",
+      });
+    }).finally(() => setFetching(false));
   }, [id, isEdit]);
+
+  const validate = () => {
+    const e = { ...INIT_ERR }; let ok = true;
+    const req = (key, label) => { if (!f[key]?.trim()) { e[key] = `${label} tidak boleh kosong.`; ok = false; } };
+    req("sebab", "Sebab"); req("tempat", "Tempat");
+    if (!f.tanggalMulai) { e.tanggalMulai = "Tanggal mulai tidak boleh kosong."; ok = false; }
+    if (!f.tanggalAkhir) { e.tanggalAkhir = "Tanggal akhir tidak boleh kosong."; ok = false; }
+    setErrors(e);
+    const ae = mhsItems.map((m) => ({
+      nim: !m.nim?.trim() ? "NIM tidak boleh kosong." : "",
+      nama: !m.nama?.trim() ? "Nama tidak boleh kosong." : "",
+      mataKuliah: !m.mataKuliah?.trim() ? "Mata kuliah tidak boleh kosong." : "",
+      prodi: !m.prodi ? "Program studi tidak boleh kosong." : "",
+    }));
+    setMhsErrors(ae);
+    if (ae.some((e) => e.nim || e.nama || e.mataKuliah || e.prodi)) ok = false;
+    return ok;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      const payload = {
+        mahasiswas: mhsItems,
+        tanggalMulai: toApiDate(f.tanggalMulai),
+        tanggalAkhir: toApiDate(f.tanggalAkhir),
+        sebab: f.sebab, tempat: f.tempat, keterangan: f.keterangan,
+        updatedAt: new Date().toISOString(),
+      };
+      if (isEdit) {
+        await updateSurat(id, { ...original, ...payload });
+      } else {
+        await createSurat({
+          ...payload, jenisSurat: "Izin Praktikum Ulang", userId: user?.id,
+          noSurat: "-", status: "Menunggu",
+          tanggalPengajuan: new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//g, "-"),
+          createdAt: new Date().toISOString(),
+        });
+      }
+      setModal(true);
+    } catch { alert("Terjadi kesalahan saat menyimpan data."); }
+    finally { setLoading(false); }
+  };
+
+  const reset = () => {
+    setMhsItems(EMPTY_MHS); setMhsErrors([{ nim: "", nama: "", mataKuliah: "", prodi: "" }]);
+    setF({ tanggalMulai: "", tanggalAkhir: "", sebab: "", tempat: "", keterangan: "" });
+    setErrors(INIT_ERR);
+  };
 
   const title = isEdit ? "Ubah Surat Izin Praktikum Ulang" : "Pengajuan Surat Izin Praktikum Ulang";
   const subtitle = "Silakan lengkapi formulir di bawah ini untuk mengajukan izin praktikum ulang";
 
-  const s1 = (
-    <FormCard icon={<Users size={18} />} title="Data Mahasiswa" subtitle="Informasi lengkap mahasiswa yang mengajukan izin praktikum ulang">
-      <MahasiswaSection items={mahasiswaItems} setItems={setMahasiswaItems} />
-    </FormCard>
-  );
+  if (fetching) return <MainLayout><div className="p-8 text-sm text-slate-400">Memuat data...</div></MainLayout>;
 
-  const s2 = (
-    <FormCard icon={<CalendarDays size={18} />} title="Jadwal Izin" subtitle="Tentukan periode waktu izin tidak mengikuti kuliah">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div><FormLabel required>Tanggal Mulai</FormLabel><FormDateInput value={tanggalMulai} onChange={setTanggalMulai} /></div>
-        <div><FormLabel required>Tanggal Akhir</FormLabel><FormDateInput value={tanggalAkhir} onChange={setTanggalAkhir} /></div>
-      </div>
-    </FormCard>
-  );
+  const sections = [
+    <FormCard key="mhs" icon={<Users size={18} />} title="Data Mahasiswa" subtitle="Informasi lengkap mahasiswa yang mengajukan izin praktikum ulang">
+      <MahasiswaSection items={mhsItems} setItems={setMhsItems} mhsErrors={mhsErrors} setMhsErrors={setMhsErrors} />
+    </FormCard>,
 
-  const s3 = (
-    <FormCard icon={<Info size={18} />} title="Alasan & Tempat Izin" subtitle="Sebab dan lokasi terkait izin tidak mengikuti kuliah">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div><FormLabel required>Sebab</FormLabel><FormTextarea placeholder="Masukkan alasan tidak mengikuti kuliah" value={sebab} onChange={setSebab} rows={3} /></div>
-        <div><FormLabel required>Tempat</FormLabel><FormTextarea placeholder="Masukkan lokasi/tempat tujuan" value={tempat} onChange={setTempat} rows={3} /></div>
-      </div>
-    </FormCard>
-  );
+    <FormCard key="jadwal" icon={<CalendarDays size={18} />} title="Jadwal Izin" subtitle="Tentukan periode waktu izin praktikum ulang">
+      <FormGrid cols={2}>
+        <FormField label="Tanggal Mulai" required error={errors.tanggalMulai}>
+          <FormDateInput value={f.tanggalMulai} onChange={set("tanggalMulai")} error={errors.tanggalMulai} />
+        </FormField>
+        <FormField label="Tanggal Akhir" required error={errors.tanggalAkhir}>
+          <FormDateInput value={f.tanggalAkhir} onChange={set("tanggalAkhir")} error={errors.tanggalAkhir} />
+        </FormField>
+      </FormGrid>
+    </FormCard>,
 
-  const s4 = (
-    <FormCard icon={<MessageSquare size={18} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan terkait izin praktikum ulang">
+    <FormCard key="alasan" icon={<Info size={18} />} title="Alasan & Tempat Izin" subtitle="Sebab dan lokasi terkait izin praktikum ulang">
+      <FormGrid cols={2}>
+        <FormField label="Sebab" required error={errors.sebab}>
+          <FormTextarea placeholder="Masukkan alasan izin praktikum ulang" value={f.sebab} onChange={set("sebab")} rows={3} error={errors.sebab} />
+        </FormField>
+        <FormField label="Tempat" required error={errors.tempat}>
+          <FormTextarea placeholder="Masukkan lokasi/tempat tujuan" value={f.tempat} onChange={set("tempat")} rows={3} error={errors.tempat} />
+        </FormField>
+      </FormGrid>
+    </FormCard>,
+
+    <FormCard key="ket" icon={<MessageSquare size={18} />} title="Informasi Tambahan" subtitle="Catatan atau keterangan tambahan">
       <FormLabel>Keterangan</FormLabel>
-      <FormTextarea placeholder="Masukkan keterangan tambahan jika diperlukan" value={keterangan} onChange={setKeterangan} />
-    </FormCard>
-  );
-
-  const sections = [s1, s2, s3, s4];
+      <FormTextarea placeholder="Masukkan keterangan tambahan jika diperlukan" value={f.keterangan} onChange={set("keterangan")} />
+    </FormCard>,
+  ];
 
   return (
     <MainLayout>
       <FormPageHeader breadcrumb="Pengajuan Surat / Izin Praktikum Ulang" title={title} subtitle={subtitle} />
       <div className="hidden lg:block h-6" />
       <div className="mx-0 lg:mx-8 pb-10">
-        <FormDesktopPanel title="Form Izin Praktikum Ulang" subtitle={subtitle} footer={<FormDesktopFooter />}>
+        <FormDesktopPanel title="Form Izin Praktikum Ulang" subtitle={subtitle} footer={<FormDesktopFooter onSubmit={handleSubmit} loading={loading} />}>
           {sections}
         </FormDesktopPanel>
         <FormMobileCards>{sections}</FormMobileCards>
-        <FormMobileFooter />
+        <FormMobileFooter onSubmit={handleSubmit} loading={loading} />
       </div>
+      <SuccessModal isOpen={modal} message={isEdit ? "Perubahan Berhasil Disimpan!" : "Surat Berhasil Dikirim!"}
+        onOk={() => navigate("/data-surat/izin-praktikum-ulang")}
+        onClose={() => { setModal(false); reset(); }} />
     </MainLayout>
   );
 }

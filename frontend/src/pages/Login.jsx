@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
@@ -80,7 +79,7 @@ export default function Login() {
             </p>
           </div>
 
-          {/* API / network error */}
+          {/* API error */}
           {errors.api && (
             <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-5 text-sm">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
@@ -147,9 +146,12 @@ export default function Login() {
 
             {/* Lupa Password (dummy) */}
             <div>
-              <button type="button" className="underline text-sm text-primary-2 hover:text-blue-700 font-medium transition-colors">
+              <Link
+                to="/lupa-password"
+                className="underline text-sm text-primary-2 hover:text-blue-700 font-medium transition-colors"
+              >
                 Lupa Password?
-              </button>
+              </Link>
             </div>
 
             {/* Submit */}

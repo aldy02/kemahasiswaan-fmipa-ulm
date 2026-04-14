@@ -1,4 +1,3 @@
-// src/pages/data-surat/PeminjamanAlatBahanDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FileText, Users, Building2, CalendarDays, MessageSquare, Package } from "lucide-react";

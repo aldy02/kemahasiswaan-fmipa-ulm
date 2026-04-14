@@ -1,11 +1,8 @@
-// src/components/DataSuratDetailComponents.jsx
 import { useNavigate } from "react-router-dom";
 import { Check, X, ArrowLeft, SquarePen } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 
-// ─────────────────────────────────────────────
-// DetailStatusBadge
-// ─────────────────────────────────────────────
+// Status Badge
 const detailStatusConfig = {
   Diterima: { pillBg: "bg-succes-1",  iconColor: "text-succes-1",  icon: <Check size={14} strokeWidth={3} /> },
   Ditolak:  { pillBg: "bg-error-2",   iconColor: "text-error-2",   icon: <X size={14} strokeWidth={3} /> },
@@ -24,9 +21,7 @@ export function DetailStatusBadge({ status }) {
   );
 }
 
-// ─────────────────────────────────────────────
 // SectionCard
-// ─────────────────────────────────────────────
 export function SectionCard({ icon, title, children }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
@@ -41,9 +36,7 @@ export function SectionCard({ icon, title, children }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// Field — single label + value row
-// ─────────────────────────────────────────────
+// Field
 export function Field({ label, value }) {
   return (
     <div className="mb-4 last:mb-0">
@@ -53,9 +46,7 @@ export function Field({ label, value }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// FieldWithSub — label + main value + sub value
-// ─────────────────────────────────────────────
+// FieldWithSub
 export function FieldWithSub({ label, main, sub }) {
   return (
     <div className="mb-4 last:mb-0">
@@ -66,9 +57,7 @@ export function FieldWithSub({ label, main, sub }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// MahasiswaItem — for multi/single mahasiswa list
-// ─────────────────────────────────────────────
+// MahasiswaItem
 export function MahasiswaItem({ index, mhs, showIndex }) {
   return (
     <div className="mb-4 last:mb-0">
@@ -81,20 +70,7 @@ export function MahasiswaItem({ index, mhs, showIndex }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// DetailPageLayout — main wrapper for all detail pages
-//
-// Props:
-//  - breadcrumb: string
-//  - pageTitle: string
-//  - detailTitle: string
-//  - noSurat: string
-//  - status: string
-//  - editPath: string  — navigate target for Ubah button
-//  - leftCards: ReactNode[]  — cards for left column (desktop)
-//  - rightCards: ReactNode[] — cards for right column (desktop)
-//  - mobileCards: ReactNode[] — cards stacked on mobile (ordered as desired)
-// ─────────────────────────────────────────────
+// Detail Layout
 export function DetailPageLayout({
   breadcrumb,
   pageTitle,
@@ -138,50 +114,65 @@ export function DetailPageLayout({
 
         <hr className="border-slate-200 my-5 mx-4 lg:mx-0" />
 
-        {/* Desktop: 2-column grid */}
+        {/* Desktop: grid 2 coloumn*/}
         <div className="hidden lg:grid lg:grid-cols-2 gap-4">
           <div className="flex flex-col gap-4">{leftCards}</div>
           <div className="flex flex-col gap-4">{rightCards}</div>
         </div>
 
-        {/* Mobile: single column */}
+        {/* Mobile: single coloumn */}
         <div className="lg:hidden flex flex-col gap-4 px-4">
           {mobileCards}
         </div>
 
-        {/* Footer Buttons */}
+        {/* Footer Button */}
         <DetailFooter editPath={editPath} />
       </div>
     </MainLayout>
   );
 }
 
-// ─────────────────────────────────────────────
-// DetailFooter — Kembali + Ubah buttons
-// ─────────────────────────────────────────────
+// DetailFooter
 export function DetailFooter({ editPath }) {
   const navigate = useNavigate();
   return (
-    <div className="flex justify-end items-center gap-3 mt-6 px-4 lg:px-0">
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-primary-1 font-semibold text-sm hover:bg-slate-50 transition-colors"
-      >
-        <ArrowLeft size={15} /> Kembali
-      </button>
-      <button
-        onClick={() => navigate(editPath)}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-2 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
-      >
-        <SquarePen size={15} /> Ubah
-      </button>
+    <div className="mt-6 px-4 lg:px-0">
+      {/* Desktop */}
+      <div className="hidden lg:flex justify-end items-center gap-3 mt-7 pt-5 border-t border-slate-200">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-primary-1 font-semibold text-sm hover:bg-slate-50 transition-colors"
+        >
+          <ArrowLeft size={15} /> Kembali
+        </button>
+        <button
+          onClick={() => navigate(editPath)}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-2 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+        >
+          <SquarePen size={15} /> Ubah
+        </button>
+      </div>
+
+      {/* Mobile */}
+      <div className="lg:hidden flex flex-col gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full border border-slate-200 bg-white text-primary-1 font-semibold text-sm hover:bg-slate-50 transition-all"
+        >
+          <ArrowLeft size={15} /> Kembali
+        </button>
+        <button
+          onClick={() => navigate(editPath)}
+          className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-primary-2 hover:bg-blue-600 text-white font-semibold text-sm transition-all shadow-md shadow-blue-200"
+        >
+          <SquarePen size={15} /> Ubah
+        </button>
+      </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────
-// NotFound — shown when item is not found
-// ─────────────────────────────────────────────
+// NotFound
 export function NotFound() {
   const navigate = useNavigate();
   return (

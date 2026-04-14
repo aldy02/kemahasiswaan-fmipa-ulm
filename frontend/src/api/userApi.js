@@ -24,7 +24,7 @@ export const updateUser = (id, data) => api.put(`/users/${id}`, data);
 // DELETE user
 export const deleteUser = (id) => api.delete(`/users/${id}`);
 
-// LOGIN — filter di client
+// LOGIN
 export const login = async (email, password) => {
   const res = await getUsers();
   const user = res.data.find(

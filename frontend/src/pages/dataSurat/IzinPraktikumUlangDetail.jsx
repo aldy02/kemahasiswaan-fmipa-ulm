@@ -1,14 +1,29 @@
-// src/pages/IzinPraktikumUlangDetail.jsx
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FileText, Users, CalendarDays, Info, MessageSquare } from "lucide-react";
 import { DetailPageLayout, SectionCard, Field, MahasiswaItem, NotFound } from "../../components/DataSuratDetailComponents";
-import { izinPraktikumUlangData } from "../../test/data";
+import { getSuratById } from "../../api/suratApi";
 
 export default function IzinPraktikumUlangDetail() {
   const { id } = useParams();
-  const item = izinPraktikumUlangData.find((d) => d.id === Number(id));
 
-  if (!item) return <NotFound />;
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getSuratById(id)
+      .then((res) => {
+        if (!res.data) { setNotFound(true); return; }
+        setItem(res.data);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return null;
+  if (notFound || !item) return <NotFound />;
 
   const mahasiswas = item.mahasiswas ?? [];
   const isMulti = mahasiswas.length > 1;

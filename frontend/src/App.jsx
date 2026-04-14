@@ -1,4 +1,3 @@
-// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -6,6 +5,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Pengaturan from "./pages/Pengaturan";
+import UnderConstruction from "./pages/UnderConstruction";
 
 // Data Surat
 import PeminjamanRuangan from "./pages/dataSurat/PeminjamanRuangan";
@@ -39,7 +40,9 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/lupa-password" element={<UnderConstruction />} />
         <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/pengaturan" element={<ProtectedRoute><Pengaturan /></ProtectedRoute>} />
 
         {/* Data Surat */}
         <Route path="/data-surat/peminjaman-ruangan" element={<ProtectedRoute><PeminjamanRuangan /></ProtectedRoute>} />

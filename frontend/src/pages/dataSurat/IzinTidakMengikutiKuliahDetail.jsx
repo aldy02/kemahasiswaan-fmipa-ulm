@@ -1,4 +1,3 @@
-// src/pages/data-surat/IzinTidakMengikutiKuliahDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FileText, Users, GraduationCap, CalendarDays, Info, MessageSquare } from "lucide-react";

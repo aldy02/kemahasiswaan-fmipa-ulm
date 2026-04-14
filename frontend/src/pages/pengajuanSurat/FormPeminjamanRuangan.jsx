@@ -1,4 +1,3 @@
-// src/pages/pengajuanSurat/FormPeminjamanRuangan.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FileText, Users, Calendar, Info } from "lucide-react";
@@ -11,39 +10,39 @@ import {
   FormTextInput, FormSelectInput, FormDateInput, FormTimeInput, FormTextarea,
   FormCard, FormPageHeader, FormDesktopPanel, FormMobileCards,
   FormDesktopFooter, FormMobileFooter, KepemimpinanSection, PeopleGroupIcon,
-  toFormDate, toFormTime,
+  toFormDate, toFormTime, toApiDate
 } from "../../components/FormComponents";
 
 const TEMPAT_OPTIONS = [
-  "Ruang Kuliah I.1.1","Ruang Kuliah I.1.2","Ruang Kuliah I.1.3",
-  "Ruang Kuliah I.2.1","Ruang Kuliah I.2.3","Ruang Kuliah I.2.4",
-  "Ruang Kuliah I.2.6","Ruang Kuliah II.1.2",
+  "Ruang Kuliah I.1.1", "Ruang Kuliah I.1.2", "Ruang Kuliah I.1.3",
+  "Ruang Kuliah I.2.1", "Ruang Kuliah I.2.3", "Ruang Kuliah I.2.4",
+  "Ruang Kuliah I.2.6", "Ruang Kuliah II.1.2",
 ];
 
 const INIT = {
-  noSurat:"", namaOrganisasi:"", namaKegiatan:"", tempatKegiatan:"",
-  namaPJ:"", kontakPJ:"", namaKetPelaksana:"", nimKetPelaksana:"",
-  namaKetOrg:"", nimKetOrg:"", tanggalPinjam:"", tanggalKembali:"",
-  jamMulai:"", jamBerakhir:"", keterangan:"",
+  noSurat: "", namaOrganisasi: "", namaKegiatan: "", tempatKegiatan: "",
+  namaPJ: "", kontakPJ: "", namaKetPelaksana: "", nimKetPelaksana: "",
+  namaKetOrg: "", nimKetOrg: "", tanggalPinjam: "", tanggalKembali: "",
+  jamMulai: "", jamBerakhir: "", keterangan: "",
 };
 const INIT_ERR = {
-  noSurat:"", namaOrganisasi:"", namaKegiatan:"", tempatKegiatan:"",
-  namaPJ:"", kontakPJ:"", namaKetPelaksana:"", nimKetPelaksana:"",
-  namaKetOrg:"", nimKetOrg:"", tanggalPinjam:"", tanggalKembali:"",
-  jamMulai:"", jamBerakhir:"",
+  noSurat: "", namaOrganisasi: "", namaKegiatan: "", tempatKegiatan: "",
+  namaPJ: "", kontakPJ: "", namaKetPelaksana: "", nimKetPelaksana: "",
+  namaKetOrg: "", nimKetOrg: "", tanggalPinjam: "", tanggalKembali: "",
+  jamMulai: "", jamBerakhir: "",
 };
 
 export default function FormPeminjamanRuangan() {
   const navigate = useNavigate();
-  const { id }   = useParams();
+  const { id } = useParams();
   const { user } = useAuth();
-  const isEdit   = Boolean(id);
+  const isEdit = Boolean(id);
 
-  const [f, setF]               = useState(INIT);
-  const [errors, setErrors]     = useState(INIT_ERR);
-  const [loading, setLoading]   = useState(false);
+  const [f, setF] = useState(INIT);
+  const [errors, setErrors] = useState(INIT_ERR);
+  const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
-  const [modal, setModal]       = useState(false);
+  const [modal, setModal] = useState(false);
   const [original, setOriginal] = useState(null);
 
   const set = (field) => (val) => {
@@ -59,21 +58,21 @@ export default function FormPeminjamanRuangan() {
       if (!d) return;
       setOriginal(d);
       setF({
-        noSurat:          d.noSurat === "-" ? "" : d.noSurat || "",
-        namaOrganisasi:   d.organisasi || "",
-        namaKegiatan:     d.namaKegiatan || "",
-        tempatKegiatan:   d.tempatKegiatan || "",
-        namaPJ:           d.penanggungJawab?.nama || "",
-        kontakPJ:         d.penanggungJawab?.telp || "",
+        noSurat: d.noSurat === "-" ? "" : d.noSurat || "",
+        namaOrganisasi: d.organisasi || "",
+        namaKegiatan: d.namaKegiatan || "",
+        tempatKegiatan: d.tempatKegiatan || "",
+        namaPJ: d.penanggungJawab?.nama || "",
+        kontakPJ: d.penanggungJawab?.telp || "",
         namaKetPelaksana: d.ketuaPelaksana?.nama || "",
-        nimKetPelaksana:  d.ketuaPelaksana?.nim || "",
-        namaKetOrg:       d.ketuaOrganisasi?.nama || "",
-        nimKetOrg:        d.ketuaOrganisasi?.nim || "",
-        tanggalPinjam:    toFormDate(d.tanggalPinjam),
-        tanggalKembali:   toFormDate(d.tanggalKembali),
-        jamMulai:         toFormTime(d.jamMulai),
-        jamBerakhir:      toFormTime(d.jamBerakhir),
-        keterangan:       d.keterangan || "",
+        nimKetPelaksana: d.ketuaPelaksana?.nim || "",
+        namaKetOrg: d.ketuaOrganisasi?.nama || "",
+        nimKetOrg: d.ketuaOrganisasi?.nim || "",
+        tanggalPinjam: toFormDate(d.tanggalPinjam),
+        tanggalKembali: toFormDate(d.tanggalKembali),
+        jamMulai: toFormTime(d.jamMulai),
+        jamBerakhir: toFormTime(d.jamBerakhir),
+        keterangan: d.keterangan || "",
       });
     }).finally(() => setFetching(false));
   }, [id, isEdit]);
@@ -83,20 +82,20 @@ export default function FormPeminjamanRuangan() {
     let ok = true;
     const req = (key, label) => { if (!f[key]?.trim()) { e[key] = `${label} tidak boleh kosong.`; ok = false; } };
 
-    req("noSurat",          "No surat");
-    req("namaOrganisasi",   "Nama organisasi");
-    req("namaKegiatan",     "Nama kegiatan");
-    req("namaPJ",           "Nama penanggung jawab");
-    req("kontakPJ",         "Kontak penanggung jawab");
+    req("noSurat", "No surat");
+    req("namaOrganisasi", "Nama organisasi");
+    req("namaKegiatan", "Nama kegiatan");
+    req("namaPJ", "Nama penanggung jawab");
+    req("kontakPJ", "Kontak penanggung jawab");
     req("namaKetPelaksana", "Nama ketua pelaksana");
-    req("nimKetPelaksana",  "NIM ketua pelaksana");
-    req("namaKetOrg",       "Nama ketua organisasi");
-    req("nimKetOrg",        "NIM ketua organisasi");
+    req("nimKetPelaksana", "NIM ketua pelaksana");
+    req("namaKetOrg", "Nama ketua organisasi");
+    req("nimKetOrg", "NIM ketua organisasi");
     if (!f.tempatKegiatan) { e.tempatKegiatan = "Tempat kegiatan tidak boleh kosong."; ok = false; }
-    if (!f.tanggalPinjam)  { e.tanggalPinjam  = "Tanggal pinjam tidak boleh kosong."; ok = false; }
+    if (!f.tanggalPinjam) { e.tanggalPinjam = "Tanggal pinjam tidak boleh kosong."; ok = false; }
     if (!f.tanggalKembali) { e.tanggalKembali = "Tanggal kembali tidak boleh kosong."; ok = false; }
-    if (!f.jamMulai)       { e.jamMulai       = "Jam mulai tidak boleh kosong.";       ok = false; }
-    if (!f.jamBerakhir)    { e.jamBerakhir    = "Jam berakhir tidak boleh kosong.";    ok = false; }
+    if (!f.jamMulai) { e.jamMulai = "Jam mulai tidak boleh kosong."; ok = false; }
+    if (!f.jamBerakhir) { e.jamBerakhir = "Jam berakhir tidak boleh kosong."; ok = false; }
     setErrors(e);
     return ok;
   };
@@ -109,9 +108,9 @@ export default function FormPeminjamanRuangan() {
         noSurat: f.noSurat, organisasi: f.namaOrganisasi,
         namaKegiatan: f.namaKegiatan, tempatKegiatan: f.tempatKegiatan,
         penanggungJawab: { nama: f.namaPJ, telp: f.kontakPJ },
-        ketuaPelaksana:  { nama: f.namaKetPelaksana, nim: f.nimKetPelaksana },
+        ketuaPelaksana: { nama: f.namaKetPelaksana, nim: f.nimKetPelaksana },
         ketuaOrganisasi: { nama: f.namaKetOrg, nim: f.nimKetOrg },
-        tanggalPinjam: f.tanggalPinjam, tanggalKembali: f.tanggalKembali,
+        tanggalPinjam: toApiDate(f.tanggalPinjam), tanggalKembali: toApiDate(f.tanggalKembali),
         jamMulai: f.jamMulai, jamBerakhir: f.jamBerakhir,
         keterangan: f.keterangan, updatedAt: new Date().toISOString(),
       };
@@ -121,31 +120,37 @@ export default function FormPeminjamanRuangan() {
         await createSurat({
           ...payload, jenisSurat: "Peminjaman Ruangan", userId: user?.id,
           status: "Menunggu",
-          tanggalPengajuan: new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g,"-"),
+          tanggalPengajuan: new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//g, "-"),
           createdAt: new Date().toISOString(),
         });
       }
       setModal(true);
     } catch { alert("Terjadi kesalahan saat menyimpan data."); }
-    finally   { setLoading(false); }
+    finally { setLoading(false); }
   };
 
   const kepemimpinanGroups = [
-    { label: "Penanggung Jawab", fields: [
-      { label:"Nama Penanggung Jawab",  placeholder:"Masukkan nama penanggung jawab", value:f.namaPJ,           onChange:set("namaPJ"),           error:errors.namaPJ },
-      { label:"Kontak Penanggung Jawab",placeholder:"Masukkan nomor telepon",         value:f.kontakPJ,         onChange:set("kontakPJ"),         error:errors.kontakPJ, type:"tel" },
-    ]},
-    { label: "Ketua Pelaksana", fields: [
-      { label:"Nama Ketua Pelaksana", placeholder:"Masukkan nama ketua pelaksana", value:f.namaKetPelaksana, onChange:set("namaKetPelaksana"), error:errors.namaKetPelaksana },
-      { label:"NIM Ketua Pelaksana",  placeholder:"Masukkan NIM ketua pelaksana",  value:f.nimKetPelaksana,  onChange:set("nimKetPelaksana"),  error:errors.nimKetPelaksana },
-    ]},
-    { label: "Ketua Organisasi", fields: [
-      { label:"Nama Ketua Organisasi", placeholder:"Masukkan nama ketua organisasi", value:f.namaKetOrg, onChange:set("namaKetOrg"), error:errors.namaKetOrg },
-      { label:"NIM Ketua Organisasi",  placeholder:"Masukkan NIM ketua organisasi",  value:f.nimKetOrg,  onChange:set("nimKetOrg"),  error:errors.nimKetOrg },
-    ]},
+    {
+      label: "Penanggung Jawab", fields: [
+        { label: "Nama Penanggung Jawab", placeholder: "Masukkan nama penanggung jawab", value: f.namaPJ, onChange: set("namaPJ"), error: errors.namaPJ },
+        { label: "Kontak Penanggung Jawab", placeholder: "Masukkan nomor telepon", value: f.kontakPJ, onChange: set("kontakPJ"), error: errors.kontakPJ, type: "tel" },
+      ]
+    },
+    {
+      label: "Ketua Pelaksana", fields: [
+        { label: "Nama Ketua Pelaksana", placeholder: "Masukkan nama ketua pelaksana", value: f.namaKetPelaksana, onChange: set("namaKetPelaksana"), error: errors.namaKetPelaksana },
+        { label: "NIM Ketua Pelaksana", placeholder: "Masukkan NIM ketua pelaksana", value: f.nimKetPelaksana, onChange: set("nimKetPelaksana"), error: errors.nimKetPelaksana },
+      ]
+    },
+    {
+      label: "Ketua Organisasi", fields: [
+        { label: "Nama Ketua Organisasi", placeholder: "Masukkan nama ketua organisasi", value: f.namaKetOrg, onChange: set("namaKetOrg"), error: errors.namaKetOrg },
+        { label: "NIM Ketua Organisasi", placeholder: "Masukkan NIM ketua organisasi", value: f.nimKetOrg, onChange: set("nimKetOrg"), error: errors.nimKetOrg },
+      ]
+    },
   ];
 
-  const title    = isEdit ? "Ubah Surat Peminjaman Ruangan" : "Pengajuan Surat Peminjaman Ruangan";
+  const title = isEdit ? "Ubah Surat Peminjaman Ruangan" : "Pengajuan Surat Peminjaman Ruangan";
   const subtitle = "Silakan lengkapi formulir di bawah ini untuk mengajukan peminjaman ruangan";
 
   if (fetching) return <MainLayout><div className="p-8 text-sm text-slate-400">Memuat data...</div></MainLayout>;
@@ -179,14 +184,14 @@ export default function FormPeminjamanRuangan() {
 
     <FormCard key="jadwal" icon={<Calendar size={20} />} title="Jadwal Peminjaman" subtitle="Tentukan tanggal dan waktu peminjaman ruangan">
       <FormGrid cols={2}>
-        <FormField label="Tanggal Pinjam"  required error={errors.tanggalPinjam}>
-          <FormDateInput value={f.tanggalPinjam}  onChange={set("tanggalPinjam")}  error={errors.tanggalPinjam} />
+        <FormField label="Tanggal Pinjam" required error={errors.tanggalPinjam}>
+          <FormDateInput value={f.tanggalPinjam} onChange={set("tanggalPinjam")} error={errors.tanggalPinjam} />
         </FormField>
         <FormField label="Tanggal Kembali" required error={errors.tanggalKembali}>
           <FormDateInput value={f.tanggalKembali} onChange={set("tanggalKembali")} error={errors.tanggalKembali} />
         </FormField>
-        <FormField label="Jam Mulai"    required error={errors.jamMulai}>
-          <FormTimeInput value={f.jamMulai}    onChange={set("jamMulai")}    error={errors.jamMulai} />
+        <FormField label="Jam Mulai" required error={errors.jamMulai}>
+          <FormTimeInput value={f.jamMulai} onChange={set("jamMulai")} error={errors.jamMulai} />
         </FormField>
         <FormField label="Jam Berakhir" required error={errors.jamBerakhir}>
           <FormTimeInput value={f.jamBerakhir} onChange={set("jamBerakhir")} error={errors.jamBerakhir} />

@@ -1,4 +1,3 @@
-// src/pages/data-surat/PeminjamanRuanganDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FileText, Users, Building2, CalendarDays, MessageSquare } from "lucide-react";
@@ -8,7 +7,7 @@ import { getSuratById } from "../../api/suratApi";
 export default function PeminjamanRuanganDetail() {
   const { id } = useParams();
 
-  const [item, setItem]     = useState(null);
+  const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 

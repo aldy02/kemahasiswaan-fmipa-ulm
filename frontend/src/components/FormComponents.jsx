@@ -1,9 +1,8 @@
-// src/components/form/FormComponents.jsx
 import React from "react";
 import { ArrowLeft, Send, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// ── Label ─────────────────────────────────────────────────────────────────────
+// Label
 export function FormLabel({ children, required, error }) {
   return (
     <label className={`block text-[13px] lg:text-sm font-medium mb-1.5 ${error ? "text-red-700" : "text-primary-1"}`}>
@@ -13,7 +12,7 @@ export function FormLabel({ children, required, error }) {
   );
 }
 
-// ── Field Error ───────────────────────────────────────────────────────────────
+// Field error
 export function FormFieldError({ message }) {
   if (!message) return null;
   return (
@@ -24,12 +23,12 @@ export function FormFieldError({ message }) {
   );
 }
 
-// ── Base classes ──────────────────────────────────────────────────────────────
+// Base class
 const baseInput   = "w-full px-4 py-3 border rounded-lg text-sm text-primary-1 placeholder-neutral-1 focus:outline-none focus:ring-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white";
 const normalBorder = `${baseInput} border-gray-200 focus:ring-primary-2`;
 const errorBorder  = `${baseInput} border-red-700 focus:ring-red-700 placeholder-red-700`;
 
-// ── Text Input ────────────────────────────────────────────────────────────────
+// Text input
 export function FormTextInput({ placeholder, value, onChange, type = "text", disabled, error }) {
   return (
     <input
@@ -49,7 +48,7 @@ export function FormTextInput({ placeholder, value, onChange, type = "text", dis
   );
 }
 
-// ── Number Input ──────────────────────────────────────────────────────────────
+// Input number
 export function FormNumberInput({ placeholder, value, onChange, error }) {
   return (
     <input
@@ -63,7 +62,7 @@ export function FormNumberInput({ placeholder, value, onChange, error }) {
   );
 }
 
-// ── Select Input ──────────────────────────────────────────────────────────────
+// Select input
 export function FormSelectInput({ placeholder, value, onChange, options, disabled, error }) {
   const isEmpty = !value;
   return (
@@ -90,7 +89,7 @@ export function FormSelectInput({ placeholder, value, onChange, options, disable
           <option key={o} value={o} className="text-primary-1">{o}</option>
         ))}
       </select>
-      {/* Chevron icon — merah jika error dan kosong */}
+      {/* Merah jika error dan kosong */}
       <span className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 ${isEmpty && error ? "text-red-700" : "text-neutral-2"}`}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -100,12 +99,12 @@ export function FormSelectInput({ placeholder, value, onChange, options, disable
   );
 }
 
-// ── Date Input ────────────────────────────────────────────────────────────────
+// Input tanggal
 export function FormDateInput({ value, onChange, disabled, error }) {
   const isEmpty = !value;
   return (
     <div className="relative">
-      {/* Calendar icon — merah jika error dan kosong */}
+      {/* Calendar icon */}
       <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isEmpty && error ? "text-red-700" : "text-neutral-2"}`}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -136,12 +135,12 @@ export function FormDateInput({ value, onChange, disabled, error }) {
   );
 }
 
-// ── Time Input ────────────────────────────────────────────────────────────────
+// Time input
 export function FormTimeInput({ value, onChange, error }) {
   const isEmpty = !value;
   return (
     <div className="relative">
-      {/* Clock icon — merah jika error dan kosong */}
+      {/* Merah jika error dan kosong */}
       <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isEmpty && error ? "text-red-700" : "text-neutral-2"}`}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -167,7 +166,7 @@ export function FormTimeInput({ value, onChange, error }) {
   );
 }
 
-// ── Textarea ──────────────────────────────────────────────────────────────────
+// Textarea
 export function FormTextarea({ placeholder, value, onChange, rows = 4, error }) {
   return (
     <textarea
@@ -180,7 +179,7 @@ export function FormTextarea({ placeholder, value, onChange, rows = 4, error }) 
   );
 }
 
-// ── Section Card ──────────────────────────────────────────────────────────────
+// Section card
 export function FormCard({ icon, title, subtitle, children, dimmed = false }) {
   return (
     <div className={`bg-white rounded-2xl p-5 lg:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.05)] lg:shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:border lg:border-slate-200 transition-opacity ${dimmed ? "opacity-80" : ""}`}>
@@ -198,7 +197,7 @@ export function FormCard({ icon, title, subtitle, children, dimmed = false }) {
   );
 }
 
-// ── Operator Info Banner ──────────────────────────────────────────────────────
+// Operator Info Banner
 export function FormInfoBanner({ text = "Bagian ini akan diisi otomatis oleh operator sistem setelah permohonan disetujui." }) {
   return (
     <div className="flex items-start gap-2.5 mt-5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
@@ -210,7 +209,7 @@ export function FormInfoBanner({ text = "Bagian ini akan diisi otomatis oleh ope
   );
 }
 
-// ── Page Header ───────────────────────────────────────────────────────────────
+// Header Halaman
 export function FormPageHeader({ breadcrumb, title, subtitle }) {
   return (
     <div className="px-4 pt-5 pb-0 lg:px-8 lg:pt-7">
@@ -221,7 +220,7 @@ export function FormPageHeader({ breadcrumb, title, subtitle }) {
   );
 }
 
-// ── Desktop Panel ─────────────────────────────────────────────────────────────
+// Desktop Panel
 export function FormDesktopPanel({ title, subtitle, children, footer }) {
   return (
     <div className="hidden lg:block bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.05)] p-8">
@@ -233,12 +232,12 @@ export function FormDesktopPanel({ title, subtitle, children, footer }) {
   );
 }
 
-// ── Mobile Cards Container ────────────────────────────────────────────────────
+// Mobile Cards Container
 export function FormMobileCards({ children }) {
   return <div className="lg:hidden flex flex-col gap-4 px-4 pt-4">{children}</div>;
 }
 
-// ── Desktop Footer ────────────────────────────────────────────────────────────
+// Desktop Footer
 export function FormDesktopFooter({ onBack, onSubmit, loading }) {
   const navigate    = useNavigate();
   const handleBack  = onBack   || (() => navigate(-1));
@@ -273,7 +272,7 @@ export function FormDesktopFooter({ onBack, onSubmit, loading }) {
   );
 }
 
-// ── Mobile Footer ─────────────────────────────────────────────────────────────
+// Mobile Footer
 export function FormMobileFooter({ onBack, onSubmit, showBack = true, loading }) {
   const navigate    = useNavigate();
   const handleBack  = onBack   || (() => navigate(-1));
@@ -310,13 +309,13 @@ export function FormMobileFooter({ onBack, onSubmit, showBack = true, loading })
   );
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// Helpers
 export function toFormDate(str) {
   if (!str || str === "-") return "";
   const p = str.split("-");
   if (p.length === 3) {
     if (p[2].length === 4) return `${p[2]}-${p[1]}-${p[0]}`; // dd-mm-yyyy → yyyy-mm-dd
-    return str; // already yyyy-mm-dd
+    return str;
   }
   return "";
 }
@@ -325,7 +324,7 @@ export function toFormTime(str) {
   return str ? str.replace(" WITA", "").trim() : "";
 }
 
-// ── Operator Section ──────────────────────────────────────────────────────────
+// Operator section
 export function FormOperatorSection({
   noSurat, setNoSurat, namaDosen, setNamaDosen,
   nip, setNip, pangkat, setPangkat, jabatan, setJabatan,
@@ -355,9 +354,7 @@ export function FormOperatorSection({
   );
 }
 
-// ── FormField — label + input + error in one ─────────────────────────────────
-// Accepts any input component as `children`, or uses FormTextInput by default.
-// Props: label, required, error, children
+// FormField
 export function FormField({ label, required, error, children }) {
   return (
     <div>
@@ -368,8 +365,7 @@ export function FormField({ label, required, error, children }) {
   );
 }
 
-// ── FormGrid — responsive grid wrapper ───────────────────────────────────────
-// cols: number of columns on desktop (default 2)
+// FormGrid
 export function FormGrid({ cols = 2, children }) {
   const colClass = { 1: "lg:grid-cols-1", 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4" }[cols] || "lg:grid-cols-2";
   return (
@@ -377,8 +373,7 @@ export function FormGrid({ cols = 2, children }) {
   );
 }
 
-// ── KepemimpinanSection — reusable 3-column leadership block ─────────────────
-// groups: Array<{ label, fields: Array<{ label, placeholder, value, onChange, error, type? }> }>
+// Kepemimpinan Section
 export function KepemimpinanSection({ groups }) {
   return (
     <>
@@ -417,7 +412,7 @@ export function KepemimpinanSection({ groups }) {
   );
 }
 
-// ── People Group Icon ─────────────────────────────────────────────────────────
+// People Group Icon
 export const PeopleGroupIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="9" cy="7" r="4" />
@@ -426,3 +421,8 @@ export const PeopleGroupIcon = ({ size = 18 }) => (
     <path d="M21 21v-2a4 4 0 0 0-3-3.85" />
   </svg>
 );
+
+export function toApiDate(str) {
+  if (!str) return "";
+  return str.split("-").reverse().join("-");
+}

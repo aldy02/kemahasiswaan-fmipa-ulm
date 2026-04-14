@@ -1,4 +1,3 @@
-// src/components/DataSuratComponents.jsx
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Search, Plus, Check, X, FileSearchCorner, SquarePen, Trash2, AlertCircle } from "lucide-react";
@@ -6,9 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 
 const ITEMS_PER_PAGE = 10;
 
-// ─────────────────────────────────────────────
 // StatusBadge
-// ─────────────────────────────────────────────
 const statusConfig = {
   Diterima: {
     iconBg: "bg-succes-1",  pillBg: "bg-succes-1",  iconColor: "text-succes-1",
@@ -57,9 +54,7 @@ export function StatusBadge({ status }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// DeleteConfirmModal
-// ─────────────────────────────────────────────
+// Delete Confirmation Modal
 export function DeleteConfirmModal({
   isOpen,
   onClose,
@@ -106,9 +101,7 @@ export function DeleteConfirmModal({
   );
 }
 
-// ─────────────────────────────────────────────
 // Pagination
-// ─────────────────────────────────────────────
 export function Pagination({ current, total, onChange }) {
   if (total <= 1) return null;
   return (
@@ -142,9 +135,7 @@ export function Pagination({ current, total, onChange }) {
   );
 }
 
-// ─────────────────────────────────────────────
 // DataTable (desktop)
-// ─────────────────────────────────────────────
 export function DataTable({ columns, data, onView, onEdit, onDelete }) {
   const hasActions = onView || onEdit || onDelete;
   return (
@@ -189,9 +180,7 @@ export function DataTable({ columns, data, onView, onEdit, onDelete }) {
   );
 }
 
-// ─────────────────────────────────────────────
 // MobileCard
-// ─────────────────────────────────────────────
 export function MobileCard({ title, subtitle, status, fields = [], onClick, onEdit, onDelete }) {
   return (
     <div
@@ -226,9 +215,7 @@ export function MobileCard({ title, subtitle, status, fields = [], onClick, onEd
   );
 }
 
-// ─────────────────────────────────────────────
 // SuratPageLayout
-// ─────────────────────────────────────────────
 export function SuratPageLayout({
   breadcrumb,
   pageTitle,

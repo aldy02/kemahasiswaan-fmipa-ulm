@@ -1,30 +1,39 @@
-// src/pages/data-surat/PeminjamanAlatBahan.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SuratPageLayout, StatusBadge } from "../../components/DataSuratComponents";
 import { getSurats, deleteSurat } from "../../api/suratApi";
 
 const columns = [
-  { key: "noSurat",          label: "No Surat" },
-  { key: "kegiatan",         label: "Kegiatan" },
+  { key: "noSurat", label: "No Surat" },
+  { key: "kegiatan", label: "Kegiatan" },
   { key: "tanggalPengajuan", label: "Tanggal Pengajuan" },
-  { key: "tanggalPinjam",    label: "Tanggal Pinjam" },
-  { key: "tanggalKembali",   label: "Tanggal Kembali" },
+  { key: "tanggalPinjam", label: "Tanggal Pinjam" },
+  { key: "tanggalKembali", label: "Tanggal Kembali" },
   { key: "status", label: "Status", render: (item) => <StatusBadge status={item.status} /> },
 ];
+
+const sortByNewest = (arr) => {
+  const parseDate = (str) => {
+    if (!str) return 0;
+    const [d, m, y] = str.split("-");
+    return new Date(`${y}-${m}-${d}`).getTime();
+  };
+  return [...arr].sort((a, b) => parseDate(b.tanggalPengajuan) - parseDate(a.tanggalPengajuan));
+};
 
 export default function PeminjamanAlatBahan() {
   const navigate = useNavigate();
 
-  const [data,    setData]    = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState("");
+  const [error, setError] = useState("");
 
   const fetchData = () => {
     setLoading(true);
     getSurats()
       .then((res) => {
-        setData(res.data.filter((s) => s.jenisSurat === "Peminjaman Alat/Bahan"));
+        const filtered = res.data.filter((s) => s.jenisSurat === "Peminjaman Alat/Bahan");
+        setData(sortByNewest(filtered));
       })
       .catch(() => setError("Gagal memuat data. Periksa koneksi Anda."))
       .finally(() => setLoading(false));

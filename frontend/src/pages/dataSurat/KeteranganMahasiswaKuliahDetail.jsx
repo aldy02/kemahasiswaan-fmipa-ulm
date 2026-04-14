@@ -1,13 +1,29 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { User, Users, CheckCircle, MessageSquare } from "lucide-react";
 import { DetailPageLayout, SectionCard, Field, NotFound } from "../../components/DataSuratDetailComponents";
-import { keteranganMahasiswaKuliahData } from "../../test/data";
+import { getSuratById } from "../../api/suratApi";
 
 export default function KeteranganMahasiswaKuliahDetail() {
   const { id } = useParams();
-  const item = keteranganMahasiswaKuliahData.find((d) => d.id === Number(id));
 
-  if (!item) return <NotFound />;
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getSuratById(id)
+      .then((res) => {
+        if (!res.data) { setNotFound(true); return; }
+        setItem(res.data);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return null;
+  if (notFound || !item) return <NotFound />;
 
   const cardMahasiswa = (
     <SectionCard key="mhs" icon={<User size={20} />} title="Informasi Mahasiswa">
@@ -18,7 +34,9 @@ export default function KeteranganMahasiswaKuliahDetail() {
         <Field label="Semester" value={item.semester} />
         <Field label="Tempat Lahir" value={item.tempatLahir} />
         <Field label="Tanggal Lahir" value={item.tanggalLahir} />
-        <Field label="Tahun Ajaran" value={item.tahunAjaran} />
+        <div className="col-span-2">
+          <Field label="Tahun Ajaran" value={item.tahunAjaran} />
+        </div>
       </div>
     </SectionCard>
   );
