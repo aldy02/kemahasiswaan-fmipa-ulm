@@ -1,4 +1,4 @@
-import underConstructionGif from "../assets/UnderConstructionAnimation.gif";
+import underConstructionGif from "../assets/underConstructionAnimation.gif";
 import { motion } from "framer-motion";
 
 export default function UnderConstruction() {
