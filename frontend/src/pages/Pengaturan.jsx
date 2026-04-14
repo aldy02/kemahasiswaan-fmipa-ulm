@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Shield, Eye, EyeOff, ChevronDown, ArrowLeft, Save, AlertCircle } from "lucide-react";
+import { User, ShieldCheck, Eye, EyeOff, ChevronDown, ArrowLeft, Save, AlertCircle } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserById, updateUser } from "../api/userApi";
@@ -270,7 +270,7 @@ export default function Pengaturan() {
         {/* Keamanan Section */}
         <div className="bg-white rounded-2xl p-5 lg:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.05)] lg:border lg:border-slate-200">
           <CardHeader
-            icon={<Shield size={20} />}
+            icon={<ShieldCheck size={20} />}
             title="Keamanan"
             subtitle="Ubah kata sandi untuk menjaga keamanan akun anda"
           />
