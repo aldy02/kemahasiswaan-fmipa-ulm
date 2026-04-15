@@ -15,6 +15,14 @@ function FieldError({ message }) {
   );
 }
 
+function FieldLabel({ children, error }) {
+  return (
+    <label className={`block text-sm font-medium mb-1.5 ${error ? "text-red-700" : "text-primary-1"}`}>
+      {children}
+    </label>
+  );
+}
+
 const INIT_ERRORS = {
   nim: "", namaDepan: "", namaBelakang: "",
   email: "", password: "", confirmPassword: "", api: "",
@@ -55,6 +63,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess("");
+    setErrors(INIT_ERRORS);
 
     const { errs, hasError } = validate();
     if (hasError) { setErrors(errs); return; }
@@ -84,10 +93,21 @@ export default function Register() {
         updatedAt: new Date().toISOString(),
       };
 
-      const res = await createUser(payload);
-      const newUser = res.data;
-
+      await createUser(payload);
       setSuccess("Akun berhasil dibuat! Silakan login dengan akun Anda.");
+
+      // Reset form
+      setForm({
+        nim: "",
+        namaDepan: "",
+        namaBelakang: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     } catch {
       setErr("api", "Terjadi kesalahan. Periksa koneksi internet Anda.");
     } finally {
@@ -97,12 +117,11 @@ export default function Register() {
 
   const base = "w-full px-4 py-3 border rounded-lg text-sm text-primary-1 placeholder-neutral-1 focus:outline-none focus:ring-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white";
   const normal = `${base} border-gray-200 focus:ring-primary-2`;
-  const err = `${base} border-red-700 focus:ring-red-700 placeholder-red-700`;
-  const cls = (field) => errors[field] ? err : normal;
+  const errCls = `${base} border-red-700 focus:ring-red-700 placeholder-red-700`;
+  const cls = (field) => errors[field] ? errCls : normal;
 
   return (
     <div className="fixed inset-0 flex bg-white">
-
       {/* Left: Image */}
       <div className="hidden md:block flex-1 overflow-hidden">
         <img src={loginImage} alt="Photo Universitas Lambung Mangkurat" className="w-full h-full object-cover" />
@@ -111,7 +130,6 @@ export default function Register() {
       {/* Right: Form */}
       <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-white overflow-y-auto">
         <div className="max-w-sm w-full mx-auto">
-
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-primary-1 mb-2">Register!</h1>
           </div>
@@ -126,45 +144,44 @@ export default function Register() {
 
           {/* Success */}
           {success && (
-            <div className="flex items-start gap-2.5 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 mb-5 text-sm">
+            <div className="flex items-start gap-2.5 bg-green-50 border border-succes-1/60 text-succes-2 rounded-lg px-4 py-3 mb-5 text-sm">
               <CheckCircle2 size={16} className="shrink-0 mt-0.5" />
               <span>{success}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-
             {/* NIM / NIP */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">NIM/NIP</label>
+              <FieldLabel error={errors.nim}>NIM/NIP</FieldLabel>
               <input type="text" value={form.nim} onChange={set("nim")} placeholder="Masukkan NIM/NIP" className={cls("nim")} />
               <FieldError message={errors.nim} />
             </div>
 
             {/* Nama Depan */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Nama Depan</label>
+              <FieldLabel error={errors.namaDepan}>Nama Depan</FieldLabel>
               <input type="text" value={form.namaDepan} onChange={set("namaDepan")} placeholder="Masukkan nama depan" className={cls("namaDepan")} />
               <FieldError message={errors.namaDepan} />
             </div>
 
             {/* Nama Belakang */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Nama Belakang</label>
+              <FieldLabel error={errors.namaBelakang}>Nama Belakang</FieldLabel>
               <input type="text" value={form.namaBelakang} onChange={set("namaBelakang")} placeholder="Masukkan nama belakang" className={cls("namaBelakang")} />
               <FieldError message={errors.namaBelakang} />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Email</label>
+              <FieldLabel error={errors.email}>Email</FieldLabel>
               <input type="email" value={form.email} onChange={set("email")} placeholder="Masukkan email" className={cls("email")} />
               <FieldError message={errors.email} />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Password</label>
+              <FieldLabel error={errors.password}>Password</FieldLabel>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -182,7 +199,7 @@ export default function Register() {
 
             {/* Konfirmasi Password */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Konfirmasi Password</label>
+              <FieldLabel error={errors.confirmPassword}>Konfirmasi Password</FieldLabel>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -201,7 +218,7 @@ export default function Register() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading || !!success}
+              disabled={loading}
               className="w-full py-3.5 bg-primary-2 hover:bg-blue-600 active:bg-blue-800 text-white font-semibold rounded-lg transition-all duration-200 text-sm shadow-lg shadow-blue-200 hover:shadow-blue-300 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (

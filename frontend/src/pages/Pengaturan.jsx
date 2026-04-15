@@ -150,7 +150,10 @@ export default function Pengaturan() {
       {/* Header */}
       <div className="px-4 pt-5 pb-0 lg:px-8 lg:pt-7">
         <p className="hidden lg:block text-sm text-neutral-1 mb-1">Master User / Pengaturan</p>
-        <h1 className="text-2xl lg:text-[28px] font-bold text-primary-1 mb-6">Pengaturan Akun</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-primary-1 mb-1 lg:mb-6">Pengaturan Akun</h1>
+        <p className="lg:hidden text-[13px] text-neutral-1 mt-0.5 mb-6">
+          Halaman untuk merubah informasi akun
+        </p>
       </div>
 
       {/* Global banners */}
@@ -387,13 +390,13 @@ export default function Pengaturan() {
 
       {/* Footer Mobile */}
       <div className="lg:hidden flex flex-col gap-3 px-4 pb-6 mt-2">
-        <button onClick={handleSimpan} disabled={loading}
-          className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-primary-2 hover:bg-blue-600 active:bg-blue-800 text-white font-semibold text-sm transition-all shadow-md shadow-blue-200 disabled:opacity-70 disabled:cursor-not-allowed">
-          {loading ? <><Spinner /> Menyimpan...</> : "Simpan"}
-        </button>
         <button onClick={() => navigate(-1)}
           className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full border border-slate-200 bg-white text-primary-1 font-semibold text-sm hover:bg-slate-50 transition-colors">
           <ArrowLeft size={15} /> Kembali
+        </button>
+        <button onClick={handleSimpan} disabled={loading}
+          className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-primary-2 hover:bg-blue-600 active:bg-blue-800 text-white font-semibold text-sm transition-all shadow-md shadow-blue-200 disabled:opacity-70 disabled:cursor-not-allowed">
+          {loading ? <><Spinner /> Menyimpan...</> : "Simpan"}
         </button>
       </div>
 

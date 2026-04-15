@@ -17,6 +17,14 @@ function FieldError({ message }) {
   );
 }
 
+function FieldLabel({ children, error }) {
+  return (
+    <label className={`block text-sm font-medium mb-1.5 ${error ? "text-red-700" : "text-primary-1"}`}>
+      {children}
+    </label>
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,15 +71,13 @@ export default function Login() {
 
   const base = "w-full px-4 py-3 border rounded-lg text-sm text-primary-1 placeholder-neutral-1 focus:outline-none focus:ring-2 focus:border-transparent transition-all bg-gray-50 focus:bg-white";
   const normal = `${base} border-gray-200 focus:ring-primary-2`;
-  const error = `${base} border-red-700 focus:ring-red-700 placeholder-red-700`;
+  const errCls = `${base} border-red-700 focus:ring-red-700 placeholder-red-700`;
 
   return (
     <div className="fixed inset-0 flex bg-white">
-
       {/* Left: Form */}
       <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-white overflow-y-auto">
         <div className="max-w-sm w-full mx-auto">
-
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-primary-1 mb-2">Login!</h1>
             <p className="text-sm text-neutral-1 leading-relaxed">
@@ -88,30 +94,29 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-
             {/* NIM / NIP */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">NIM/NIP</label>
+              <FieldLabel error={errors.nim}>NIM/NIP</FieldLabel>
               <input
                 type="text"
                 value={nim}
                 onChange={(e) => { setNim(e.target.value); clearErr("nim"); }}
                 placeholder="Masukkan NIM/NIP"
-                className={errors.nim ? error : normal}
+                className={errors.nim ? errCls : normal}
               />
               <FieldError message={errors.nim} />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Password</label>
+              <FieldLabel error={errors.password}>Password</FieldLabel>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); clearErr("password"); }}
                   placeholder="Masukkan password"
-                  className={`${errors.password ? error : normal} pr-12`}
+                  className={`${errors.password ? errCls : normal} pr-12`}
                 />
                 <button
                   type="button"
@@ -126,7 +131,7 @@ export default function Login() {
 
             {/* Captcha (dummy) */}
             <div>
-              <label className="block text-sm font-medium text-primary-1 mb-1.5">Captcha</label>
+              <FieldLabel>Captcha</FieldLabel>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -144,7 +149,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Lupa Password (dummy) */}
+            {/* Lupa Password */}
             <div>
               <Link
                 to="/lupa-password"

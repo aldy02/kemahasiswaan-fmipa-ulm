@@ -4,9 +4,10 @@ import MainLayout from "../layouts/MainLayout";
 
 // Status Badge
 const detailStatusConfig = {
-  Diterima: { pillBg: "bg-succes-1",  iconColor: "text-succes-1",  icon: <Check size={14} strokeWidth={3} /> },
-  Ditolak:  { pillBg: "bg-error-2",   iconColor: "text-error-2",   icon: <X size={14} strokeWidth={3} /> },
-  Revisi:   { pillBg: "bg-warning-1", iconColor: "text-warning-1", icon: <span className="font-black text-[13px] leading-none">!</span> },
+  Diterima: { pillBg: "bg-succes-1", iconColor: "text-succes-1", icon: <Check size={14} strokeWidth={3} /> },
+  Ditolak: { pillBg: "bg-error-2", iconColor: "text-error-2", icon: <X size={14} strokeWidth={3} /> },
+  Revisi: { pillBg: "bg-warning-1", iconColor: "text-warning-1", icon: <span className="font-black text-[13px] leading-none">!</span> },
+  Menunggu: { pillBg: "bg-warning-1", iconColor: "text-warning-1", icon: <span className="font-black text-[13px] leading-none">!</span> },
 };
 
 export function DetailStatusBadge({ status }) {
